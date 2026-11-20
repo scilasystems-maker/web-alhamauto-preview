@@ -21,8 +21,13 @@
   --noche-2: #0A1424;
   --noche-3: #12203A;
   --tinta: #F2F5FA;
-  --niebla: #A7B2C6;
-  --niebla-2: #8290A8;   /* gris apagado: ≥ 5,5:1 sobre el azul noche */
+  --niebla: #BAC4D5;
+  --niebla-2: #98A5BB;   /* gris apagado: ≥ 7:1 sobre el azul noche */
+  --noche-claro: #0C1A30;   /* azul noche un punto más claro (Servicios y Contacto) */
+  /* Tamaños de texto (los titulares no usan estas variables) */
+  --t-texto: 17px;   /* texto normal */
+  --t-sec: 16px;     /* textos secundarios y etiquetas */
+  --t-peq: 14px;     /* letra pequeña: legal, leyendas */
   --linea-oscura: rgba(190, 210, 240, .14);
 
   /* Claros: los usan las secciones que aún no se han pasado al diseño oscuro */
@@ -45,7 +50,7 @@
 }
 
 @media (min-width: 760px) {
-  :root { --gutter: 40px; --alto-cabecera: 80px; }
+  :root { --gutter: 40px; --alto-cabecera: 80px; --t-texto: 18px; --t-sec: 17px; --t-peq: 15px; }
 }
 @media (min-width: 1300px) {
   :root { --gutter: 64px; }
@@ -62,8 +67,8 @@ body {
   margin: 0;
   font-family: var(--fuente);
   font-stretch: 100%;
-  font-size: 16px;
-  line-height: 1.5;
+  font-size: var(--t-texto);
+  line-height: 1.55;
   color: var(--texto);
   background: var(--noche);
   -webkit-font-smoothing: antialiased;
@@ -133,7 +138,7 @@ p { margin: 0; }
   align-items: center;
   justify-content: center;
   min-height: 52px;
-  padding: 14px 26px;
+  padding: 14px 28px;
   border: 1px solid transparent;
   border-radius: var(--radio);
   font-size: 16px;
@@ -331,7 +336,7 @@ p { margin: 0; }
   padding-top: 32px;
   border-top: 1px solid var(--linea-oscura);
   color: var(--niebla);
-  font-size: 15px;
+  font-size: var(--t-sec);
 }
 .menu__telefono {
   display: inline-block;
@@ -660,7 +665,7 @@ p { margin: 0; }
 .stock__lista p {
   margin-top: 6px;
   color: var(--niebla);
-  font-size: 15px;
+  font-size: var(--t-sec);
   line-height: 1.5;
 }
 .stock__botones {
@@ -670,7 +675,6 @@ p { margin: 0; }
   margin-top: 32px;
 }
 @media (max-width: 559px) {
-  .stock__lista p { font-size: 14px; }
   .stock__botones .boton { flex: 1 1 100%; }
 }
 
@@ -756,7 +760,7 @@ p { margin: 0; }
 .pieza__texto {
   margin-top: 8px;
   color: var(--niebla);
-  font-size: 15px;
+  font-size: var(--t-sec);
   line-height: 1.5;
 }
 
@@ -884,9 +888,16 @@ p { margin: 0; }
    Cada fila: número, nombre expandido, frase y flecha. Con ratón, la frase y la flecha se ven
    al pasar por encima o con el foco; en pantallas táctiles se ven siempre y un toque abre el enlace.
    ========================================================= */
+/* Servicios y Contacto: azul noche un punto más claro; los bordes se funden con lo de
+   alrededor en 160 px para que el cambio sea suave */
+.servicios,
+.contacto {
+  background: linear-gradient(to bottom,
+    var(--noche) 0, var(--noche-claro) 160px,
+    var(--noche-claro) calc(100% - 160px), var(--noche) 100%);
+}
 .servicios {
   padding: clamp(96px, 14vh, 160px) var(--gutter);
-  background: var(--noche);
   color: var(--tinta);
   scroll-margin-top: 0;
 }
@@ -912,10 +923,10 @@ p { margin: 0; }
 .servicio {
   position: relative;
   display: grid;
-  grid-template-columns: auto 1fr auto;
+  grid-template-columns: 1fr auto;
   grid-template-areas:
-    "num nombre flecha"
-    ".   texto  flecha";
+    "nombre flecha"
+    "texto  flecha";
   align-items: center;
   column-gap: clamp(16px, 3vw, 48px);
   padding: clamp(22px, 3.4vh, 36px) 0;
@@ -959,7 +970,7 @@ p { margin: 0; }
   overflow: hidden;
   opacity: 0;
   color: var(--niebla);
-  font-size: clamp(16px, 1.3vw, 19px);
+  font-size: var(--t-texto);
   line-height: 1.5;
   transition: max-height .5s var(--salida), opacity .35s var(--curva), margin-top .5s var(--salida);
 }
@@ -1018,12 +1029,14 @@ p { margin: 0; }
   scroll-margin-top: 0;
 }
 .nosotros__dentro { max-width: var(--ancho); margin: 0 auto; }
+/* El h2 "Nosotros" queda solo para lectores de pantalla: el 1900 hace de titular */
 .nosotros__titulo {
-  color: var(--niebla);
-  font-size: 15px;
-  font-weight: 600;
-  letter-spacing: .18em;
-  text-transform: uppercase;
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
 }
 .nosotros__anio {
   margin: clamp(8px, 2vh, 24px) 0 0 -.04em;
@@ -1057,13 +1070,11 @@ p { margin: 0; }
   padding-top: 32px;
   border-top: 1px solid var(--linea-oscura);
 }
-@media (min-width: 1000px) {
-  .nosotros__rejilla { grid-template-columns: 5fr 7fr; gap: clamp(48px, 7vw, 128px); }
-}
+.nosotros__texto { max-width: 720px; }
 .nosotros__texto > p {
   max-width: 44ch;
   color: var(--niebla);
-  font-size: 17px;
+  font-size: var(--t-texto);
   line-height: 1.6;
 }
 .nosotros__texto > p + p { margin-top: 16px; }
@@ -1109,7 +1120,6 @@ p { margin: 0; }
    ========================================================= */
 .contacto {
   padding: clamp(96px, 14vh, 160px) var(--gutter);
-  background: var(--noche);
   color: var(--tinta);
   scroll-margin-top: 0;
 }
@@ -1132,7 +1142,7 @@ p { margin: 0; }
 }
 .contacto__datos { margin: 36px 0 0; }
 .contacto__datos > div { padding: 16px 0; border-top: 1px solid var(--linea-oscura); }
-.contacto__datos dt { color: var(--niebla); font-size: 15px; }
+.contacto__datos dt { color: var(--niebla); font-size: var(--t-sec); }
 .contacto__datos dd { margin: 4px 0 0; font-size: 18px; line-height: 1.45; }
 .contacto__telefono {
   font-size: clamp(28px, 2.8vw, 40px);
@@ -1164,9 +1174,9 @@ p { margin: 0; }
 .campo { display: grid; gap: 4px; align-content: start; }
 .campo label {
   color: var(--niebla);
-  font-size: 14px;
+  font-size: var(--t-sec);
   font-weight: 500;
-  letter-spacing: .02em;
+  letter-spacing: .01em;
 }
 .campo__opcional { color: var(--niebla-2); font-weight: 400; }
 /* Campos solo subrayados, con letra grande */
@@ -1202,7 +1212,7 @@ p { margin: 0; }
   box-shadow: 0 1px 0 var(--tinta);
 }
 .campo [aria-invalid="true"] { border-bottom-color: var(--error-oscuro); box-shadow: 0 1px 0 var(--error-oscuro); }
-.campo__error { margin-top: 6px; color: var(--error-oscuro); font-size: 15px; }
+.campo__error { margin-top: 6px; color: var(--error-oscuro); font-size: var(--t-sec); }
 .formulario input, .formulario select, .formulario textarea, .formulario__estado {
   scroll-margin-top: calc(var(--alto-cabecera) + 24px);
   scroll-margin-bottom: 24px;
@@ -1235,7 +1245,7 @@ p { margin: 0; }
 .campo--casilla input:checked::after { transform: rotate(45deg) scale(1); }
 .campo--casilla input:focus-visible { outline: 2px solid var(--tinta); outline-offset: 3px; }
 .campo--casilla input[aria-invalid="true"] { border-color: var(--error-oscuro); }
-.campo--casilla label { color: var(--tinta); font-size: 16px; font-weight: 400; line-height: 1.45; letter-spacing: 0; }
+.campo--casilla label { color: var(--tinta); font-size: var(--t-sec); font-weight: 400; line-height: 1.45; letter-spacing: 0; }
 .campo--casilla label a { text-underline-offset: 3px; }
 .campo--casilla .campo__error { grid-column: 2; }
 .campo-trampa { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
@@ -1245,7 +1255,7 @@ p { margin: 0; }
   padding-top: 16px;
   border-top: 1px solid var(--linea-oscura);
   color: var(--niebla);
-  font-size: 14px;
+  font-size: var(--t-peq);
   line-height: 1.55;
 }
 .formulario__legal strong { color: var(--tinta); font-weight: 600; }
@@ -1264,7 +1274,7 @@ p { margin: 0; }
   border-left: 3px solid var(--tinta);
   background: var(--noche-2);
   color: var(--tinta);
-  font-size: 16px;
+  font-size: var(--t-texto);
   line-height: 1.5;
 }
 .formulario__estado--error { border-left-color: var(--error-oscuro); }
@@ -1278,7 +1288,7 @@ p { margin: 0; }
   line-height: 1.05;
   letter-spacing: -.03em;
 }
-.red__aviso { margin-top: 12px; color: var(--niebla); font-size: 17px; }
+.red__aviso { margin-top: 12px; color: var(--niebla); font-size: var(--t-texto); }
 .red__lista {
   margin: 32px 0 0;
   padding: 0;
@@ -1302,7 +1312,7 @@ p { margin: 0; }
   font-weight: 650;
   line-height: 1.2;
 }
-.sede__direccion { color: var(--niebla); font-size: 16px; }
+.sede__direccion { color: var(--niebla); font-size: var(--t-sec); }
 .sede__telefono {
   font-size: clamp(18px, 1.5vw, 22px);
   font-weight: 600;
@@ -1319,7 +1329,7 @@ p { margin: 0; }
   padding: clamp(56px, 9vh, 96px) var(--gutter) 0;
   background: var(--noche);
   color: var(--niebla);
-  font-size: 15px;
+  font-size: var(--t-sec);
   line-height: 1.6;
   border-top: 1px solid var(--linea-oscura);
   overflow: hidden;
@@ -1355,8 +1365,8 @@ p { margin: 0; }
 .pie__subir .icono { width: 20px; height: 20px; }
 
 .pie__columnas { display: grid; gap: 32px; padding: 40px 0; }
-@media (min-width: 760px) { .pie__columnas { grid-template-columns: repeat(3, 1fr); gap: 48px; } }
-.pie__titulo { margin-bottom: 14px; color: var(--tinta); font-size: 15px; font-weight: 600; }
+@media (min-width: 760px) { .pie__columnas { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 48px; max-width: 760px; } }
+.pie__titulo { margin-bottom: 14px; color: var(--tinta); font-size: var(--t-sec); font-weight: 600; }
 .pie__columna ul { margin: 0; padding: 0; list-style: none; }
 .pie__columna li + li { margin-top: 8px; }
 .pie__direccion { font-style: normal; }
@@ -1370,7 +1380,7 @@ p { margin: 0; }
   padding-top: 24px;
   border-top: 1px solid var(--linea-oscura);
   color: var(--niebla);
-  font-size: 13px;
+  font-size: var(--t-peq);
 }
 .pie__legal { display: flex; flex-wrap: wrap; gap: 8px 24px; margin: 0; padding: 0; list-style: none; }
 .pie__marca-registrada { flex-basis: 100%; }
@@ -1459,8 +1469,20 @@ p { margin: 0; }
    Móvil: botón de 56 px a 16 px del borde + 12 px de aire = 68 px dentro del margen.
    Escritorio: a 24 px del borde, con el margen lateral de la web basta con 36 px. */
 @media (max-width: 759px) {
-  .stock__botones, .nosotros__botones, .taller__cita, .campo--casilla,
-  .pie__arriba, .pie__abajo, .pie__columnas { padding-right: 68px; }
+  .campo--casilla, .pie__arriba, .pie__abajo, .pie__columnas { padding-right: 68px; }
+  /* Todos los botones del mismo ancho: el del contenedor menos el hueco del WhatsApp */
+  .portada__botones, .stock__botones, .nosotros__botones {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .boton,
+  .stock__botones .boton,
+  .nosotros__botones .boton,
+  .formulario__enviar {
+    flex: none;
+    width: calc(100% - 68px);
+    min-width: 0;
+  }
   .showroom .showroom__miniaturas { margin-right: 68px; }
   .showroom .showroom__flechas { justify-content: flex-start; gap: 8px; }
   .sede__telefono { justify-self: start; }
@@ -1558,7 +1580,9 @@ p { margin: 0; }
   position: relative;
   display: grid;
   place-items: end center;
-  height: clamp(280px, 46vh, 520px);
+  /* El alto se ajusta a la pantalla para que título, coche, nombre, flechas y miniaturas
+     quepan juntos en un portátil (1366×768, 1440×900) */
+  height: clamp(240px, calc(100svh - 430px), 520px);
   isolation: isolate;
 }
 /* Foco de luz que cae desde arriba */
@@ -1590,23 +1614,25 @@ p { margin: 0; }
   pointer-events: none;
 }
 
-/* Nombre gigante detrás del coche */
+/* Nombre gigante detrás del coche: va dentro del coche, centrado y con la parte de abajo
+   escondida tras la carrocería, así que siempre asoma por encima del techo */
 .vehiculo__fondo {
   position: absolute;
   z-index: -1;
-  left: 0;
-  right: 0;
-  top: 2%;
+  left: 50%;
+  bottom: 58%;
+  width: max-content;   /* si no, la caja se queda en la mitad del coche y el centrado falla */
+  transform: translateX(-50%);
   margin: 0;
   text-align: center;
-  font-size: clamp(72px, 17vw, 320px);
+  font-size: min(30cqw, 15vw);   /* proporcional al coche, sin salirse de la pantalla en el móvil */
   font-stretch: 125%;
   font-weight: 800;
   line-height: .9;
   letter-spacing: -.045em;
   white-space: nowrap;
   color: transparent;
-  background: linear-gradient(to bottom, rgba(205, 220, 245, .2), rgba(205, 220, 245, .03) 85%);
+  background: linear-gradient(to bottom, rgba(205, 220, 245, .34), rgba(205, 220, 245, .08) 80%);
   -webkit-background-clip: text;
   background-clip: text;
   user-select: none;
@@ -1617,8 +1643,10 @@ p { margin: 0; }
 .vehiculo__coche {
   --ancho-real: 640px;
   position: relative;
-  width: min(var(--ancho-real), 78vw);
-  margin: 0 0 9%;
+  container-type: inline-size;
+  /* Nunca por encima de su tamaño real; y en pantallas bajas, más pequeño para que todo quepa */
+  width: min(var(--ancho-real), 78vw, calc((100svh - 430px) * 1.55));
+  margin: 0 0 clamp(20px, 3.5vh, 44px);
 }
 .vehiculo__coche img { width: 100%; height: auto; }
 .vehiculo__coche::before {               /* sombra de contacto bajo las ruedas */
@@ -1666,14 +1694,14 @@ p { margin: 0; }
 .vehiculo__categoria {
   margin-top: 8px;
   color: var(--niebla);
-  font-size: 16px;
+  font-size: var(--t-texto);
 }
 .vehiculo__pregunta {
   display: inline-flex;
   align-items: center;
   gap: 10px;
   padding: 12px 0;
-  font-size: 16px;
+  font-size: var(--t-sec);
   font-weight: 600;
   text-decoration: underline;
   text-decoration-color: rgba(255, 255, 255, .3);
@@ -1729,7 +1757,7 @@ p { margin: 0; }
   border-radius: var(--radio);
   background: transparent;
   color: var(--niebla-2);
-  font-size: 13px;
+  font-size: var(--t-peq);
   font-weight: 500;
   cursor: pointer;
   scroll-snap-align: start;
@@ -1782,7 +1810,7 @@ p { margin: 0; }
 .js .vehiculo.saliendo .vehiculo__coche { transform: translateX(calc(var(--sentido, 1) * -14vw)); }
 .js .vehiculo.saliendo .vehiculo__fondo { translate: calc(var(--sentido, 1) * -6vw) 0; }
 
-.js .vehiculo.activo .vehiculo__fondo,
+.js .vehiculo.activo .vehiculo__fondo { opacity: 1; translate: 0 0; }   /* su transform es el centrado */
 .js .vehiculo.activo .vehiculo__coche,
 .js .vehiculo.activo .vehiculo__info { opacity: 1; transform: none; translate: 0 0; }
 .js .vehiculo.activo .vehiculo__coche { transition-delay: .06s; }
@@ -1800,7 +1828,7 @@ html:not(.js) .showroom__mandos { display: none; }
 @media (max-width: 759px) {
   .showroom__mandos { flex-direction: column; align-items: stretch; gap: 12px; }
   .showroom__flechas { justify-content: space-between; order: 2; }
-  .flecha { width: 48px; height: 48px; }
+  .flecha { width: 52px; height: 52px; }
   .vehiculo__coche { width: min(var(--ancho-real), 86vw); }
   .vehiculo__escena { height: clamp(220px, 34vh, 320px); }
   /* Nombre y enlace siempre apilados: todos los modelos miden lo mismo y no hay saltos */
@@ -1840,5 +1868,6 @@ html:not(.js) .showroom__mandos { display: none; }
   .menu__lista li { opacity: 1; transform: none; }
   .palabra { transition: none; }
   .stock__foto img { transform: none; }
-  .js .vehiculo .vehiculo__fondo, .js .vehiculo .vehiculo__coche, .js .vehiculo .vehiculo__info { transform: none !important; translate: 0 0 !important; }
+  .js .vehiculo .vehiculo__fondo { translate: 0 0 !important; }
+  .js .vehiculo .vehiculo__coche, .js .vehiculo .vehiculo__info { transform: none !important; translate: 0 0 !important; }
 }
