@@ -1,0 +1,1748 @@
+/* =========================================================
+   Alhamauto · Volkswagen Huertas Motor — diseño oscuro
+   ========================================================= */
+
+/* Archivo (variable: ancho 62–125 %, peso 100–900, alfabeto latino).
+   Licencia SIL OFL: media/fuentes/OFL-Archivo.txt */
+@font-face {
+  font-family: "Archivo";
+  font-style: normal;
+  font-weight: 100 900;
+  font-stretch: 62% 125%;
+  font-display: swap;
+  src: url("../media/fuentes/archivo-latin.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+:root {
+  /* Oscuro: azul noche casi negro, tirando al azul de Volkswagen; texto blanco y grises fríos.
+     Sin color de acento: el color lo ponen las fotos y el vídeo. */
+  --noche: #050B17;
+  --noche-2: #0A1424;
+  --noche-3: #12203A;
+  --tinta: #F2F5FA;
+  --niebla: #A7B2C6;
+  --niebla-2: #8290A8;   /* gris apagado: ≥ 5,5:1 sobre el azul noche */
+  --linea-oscura: rgba(190, 210, 240, .14);
+
+  /* Claros: los usan las secciones que aún no se han pasado al diseño oscuro */
+  --negro: #0E1418;
+  --texto: #0E1418;
+  --texto-suave: #5A6066;
+  --gris: #EEEFF2;
+  --gris-linea: #D8DADF;
+  --error: #A3262A;
+  --error-oscuro: #FF9C9C;   /* errores sobre fondo oscuro (contraste > 7:1) */
+  --blanco: #FFFFFF;
+
+  --radio: 4px;
+  --gutter: 16px;
+  --ancho: 1760px;
+  --alto-cabecera: 64px;
+  --curva: cubic-bezier(.25, .1, .25, 1);
+  --salida: cubic-bezier(.16, 1, .3, 1);   /* entradas con frenada larga */
+  --fuente: "Archivo", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+}
+
+@media (min-width: 760px) {
+  :root { --gutter: 40px; --alto-cabecera: 80px; }
+}
+@media (min-width: 1300px) {
+  :root { --gutter: 64px; }
+}
+
+/* ---------- Base ---------- */
+*, *::before, *::after { box-sizing: border-box; }
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;   /* desplazamiento suave en los saltos a cada sección */
+  background: var(--noche);
+}
+body {
+  margin: 0;
+  font-family: var(--fuente);
+  font-stretch: 100%;
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--texto);
+  background: var(--noche);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+img, video, svg { display: block; max-width: 100%; }
+a { color: inherit; }
+button { font: inherit; color: inherit; }
+h1, h2, h3 { font-weight: 500; margin: 0; }
+p { margin: 0; }
+
+:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+.saltar {
+  position: absolute;
+  left: var(--gutter);
+  top: -100px;
+  z-index: 100;
+  padding: 12px 16px;
+  background: var(--tinta);
+  color: var(--noche);
+  border-radius: var(--radio);
+  text-decoration: none;
+}
+.saltar:focus { top: 12px; }
+
+.icono {
+  width: 24px;
+  height: 24px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex: none;
+}
+.icono--flecha {
+  width: 18px;
+  height: 18px;
+  transition: transform .25s var(--curva);
+}
+
+/* ---------- Titulares: ancho expandido y peso fuerte ---------- */
+.titular {
+  font-stretch: 125%;
+  font-weight: 750;
+  line-height: .95;
+  letter-spacing: -.035em;
+}
+/* Entrada línea a línea: cada .linea recorta y su <span> sube desde abajo */
+.linea {
+  display: block;
+  overflow: hidden;
+  padding-bottom: .06em;   /* que no se corten los descendentes (g, p) */
+  margin-bottom: -.06em;
+}
+.linea > span { display: inline-block; }
+
+/* ---------- Botones ---------- */
+.boton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 52px;
+  padding: 14px 26px;
+  border: 1px solid transparent;
+  border-radius: var(--radio);
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.25;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background-color .25s var(--curva), color .25s var(--curva), border-color .25s var(--curva);
+}
+.boton--blanco { background: var(--tinta); color: var(--noche); }
+.boton--blanco:hover { background: #FFFFFF; }
+.boton--translucido {
+  background: rgba(255, 255, 255, .08);
+  border-color: rgba(255, 255, 255, .32);
+  color: var(--tinta);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+}
+.boton--translucido:hover { background: rgba(255, 255, 255, .16); border-color: rgba(255, 255, 255, .7); }
+
+/* =========================================================
+   Cabecera
+   ========================================================= */
+.cabecera {
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: 50;
+  color: var(--tinta);
+  transition: background-color .4s var(--curva), box-shadow .4s var(--curva), -webkit-backdrop-filter .4s, backdrop-filter .4s;
+}
+.cabecera__fila {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  height: var(--alto-cabecera);
+  max-width: var(--ancho);
+  margin: 0 auto;
+  padding: 0 var(--gutter);
+}
+.cabecera__boton {
+  justify-self: start;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  margin-left: -10px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: var(--radio);
+  background: none;
+  font-size: 15px;
+  font-weight: 500;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color .2s var(--curva);
+}
+.cabecera__boton:hover { background: rgba(255, 255, 255, .1); }
+.cabecera__boton--derecha { justify-self: end; margin: 0 -10px 0 0; }
+/* En móvil el texto no se ve, pero los lectores de pantalla lo siguen leyendo */
+.cabecera__texto {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.cabecera__marca {
+  font-size: 14px;
+  font-stretch: 125%;
+  font-weight: 700;
+  letter-spacing: .3em;
+  margin-right: -.3em; /* compensa el espaciado de la última letra */
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+@media (min-width: 760px) {
+  .cabecera__texto { position: static; width: auto; height: auto; overflow: visible; clip: auto; }
+  .cabecera__marca { font-size: 18px; letter-spacing: .34em; margin-right: -.34em; }
+}
+
+/* Al hacer scroll: cristal azul noche (sigue oscura, no pasa a blanco) */
+.cabecera--solida {
+  background: rgba(5, 11, 23, .72);
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
+  backdrop-filter: blur(18px) saturate(140%);
+  box-shadow: 0 1px 0 var(--linea-oscura);
+}
+
+/* =========================================================
+   Menú lateral (oscuro)
+   ========================================================= */
+.velo {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  background: rgba(2, 6, 14, .6);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity .45s var(--curva), visibility 0s linear .45s;
+}
+.menu {
+  position: fixed;
+  inset: 0 auto 0 0;
+  z-index: 70;
+  display: flex;
+  flex-direction: column;
+  width: min(100%, 520px);
+  padding: 0 var(--gutter) 32px;
+  background: var(--noche-2);
+  color: var(--tinta);
+  box-shadow: 1px 0 0 var(--linea-oscura);
+  overflow-y: auto;
+  transform: translateX(-100%);
+  visibility: hidden;
+  transition: transform .6s var(--salida), visibility 0s linear .6s;
+}
+.menu-abierto .velo { opacity: 1; visibility: visible; transition-delay: 0s; }
+.menu-abierto .menu { transform: none; visibility: visible; transition-delay: 0s; }
+.menu-abierto { overflow: hidden; }
+
+.menu__cabeza {
+  display: flex;
+  align-items: center;
+  height: var(--alto-cabecera);
+  flex: none;
+}
+.menu__cerrar {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  margin-left: -10px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: var(--radio);
+  background: none;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+}
+.menu__cerrar:hover { background: rgba(255, 255, 255, .08); }
+
+.menu__lista {
+  list-style: none;
+  margin: 32px 0 0;
+  padding: 0;
+}
+.menu__lista li {
+  opacity: 0;
+  transform: translateX(-24px);
+  transition: opacity .5s var(--curva), transform .7s var(--salida);
+}
+.menu-abierto .menu__lista li { opacity: 1; transform: none; }
+.menu-abierto .menu__lista li:nth-child(1) { transition-delay: .12s; }
+.menu-abierto .menu__lista li:nth-child(2) { transition-delay: .17s; }
+.menu-abierto .menu__lista li:nth-child(3) { transition-delay: .22s; }
+.menu-abierto .menu__lista li:nth-child(4) { transition-delay: .27s; }
+.menu-abierto .menu__lista li:nth-child(5) { transition-delay: .32s; }
+.menu-abierto .menu__lista li:nth-child(6) { transition-delay: .37s; }
+.menu__lista a {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 0;
+  font-size: clamp(30px, 8vw, 44px);
+  font-stretch: 125%;
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -.03em;
+  text-decoration: none;
+  transition: color .25s var(--curva);
+}
+.menu__lista a::after {
+  content: "";
+  width: 12px;
+  height: 12px;
+  border-top: 2px solid currentColor;
+  border-right: 2px solid currentColor;
+  transform: rotate(45deg);
+  opacity: 0;
+  translate: -10px 0;
+  transition: opacity .25s var(--curva), translate .25s var(--curva);
+}
+.menu__lista:hover a { color: var(--niebla-2); }
+.menu__lista a:hover, .menu__lista a:focus-visible { color: var(--tinta); }
+.menu__lista a:hover::after, .menu__lista a:focus-visible::after { opacity: 1; translate: 0 0; }
+
+.menu__pie {
+  margin-top: auto;
+  padding-top: 32px;
+  border-top: 1px solid var(--linea-oscura);
+  color: var(--niebla);
+  font-size: 15px;
+}
+.menu__telefono {
+  display: inline-block;
+  margin-bottom: 8px;
+  color: var(--tinta);
+  font-size: 22px;
+  font-stretch: 112%;
+  font-weight: 650;
+  text-decoration: none;
+}
+
+/* =========================================================
+   1. Portada
+   ========================================================= */
+.portada {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  min-height: 100vh;
+  min-height: 100svh;
+  overflow: hidden;
+  background: var(--noche);
+  color: var(--tinta);
+  isolation: isolate;
+}
+.portada__medio {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  transform-origin: 50% 40%;
+}
+.portada__foto {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 46% 55%;
+  animation: zoom-lento 24s var(--curva) both;
+  transform-origin: 46% 60%;
+  /* La foto de respaldo es muy clara (pared blanca): se oscurece para que el titular se lea */
+  filter: brightness(.55) saturate(.9);
+}
+/* Vídeo de YouTube a sangre, encima de la foto.
+   js/main.js crea dos capas (dos reproductores que se relevan en el bucle). Cada capa empieza
+   invisible y recibe .visible con fundido solo mientras reproduce el tramo bueno del vídeo;
+   entre una vuelta y la siguiente asoma la foto durante el fundido. */
+.portada__yt {
+  --fundido: .5s; /* debe coincidir con FUNDIDO en js/main.js */
+  --yt-x: 0%;     /* desplazamiento horizontal del encuadre, por si hiciera falta en móvil */
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none; /* sin clics ni hover: YouTube no enseña su interfaz */
+}
+.portada__yt-capa {
+  position: absolute;
+  inset: 0;
+  container-type: size;
+  opacity: 0;
+  transition: opacity var(--fundido) linear;
+}
+.portada__yt-capa.visible { opacity: 1; }
+.portada__yt iframe {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  /* "cover" para un 16:9: lo que falte por ancho o por alto se sale por los bordes */
+  width: max(100vw, 177.78vh);
+  height: max(100vh, 56.25vw);
+  width: max(100cqw, 177.78cqh);
+  height: max(100cqh, 56.25cqw);
+  border: 0;
+  transform: translate(calc(-50% + var(--yt-x)), -50%) scale(1.04); /* margen extra para esconder bordes */
+}
+
+/* Velos de cine: viñeta y degradados hacia el azul noche (la portada se funde con lo que sigue) */
+.portada__medio::before,
+.portada__medio::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1; /* por encima de la foto y del vídeo */
+  pointer-events: none;
+}
+.portada__medio::before {
+  background:
+    linear-gradient(to bottom, rgba(5, 11, 23, .6) 0%, rgba(5, 11, 23, 0) 26%),
+    radial-gradient(120% 90% at 50% 40%, rgba(5, 11, 23, 0) 55%, rgba(5, 11, 23, .55) 100%);
+}
+.portada__medio::after {
+  background: linear-gradient(to top,
+    var(--noche) 0%,
+    rgba(5, 11, 23, .9) 18%,
+    rgba(5, 11, 23, .68) 42%,
+    rgba(5, 11, 23, .28) 64%,
+    rgba(5, 11, 23, 0) 82%);
+}
+@media (min-width: 760px) {
+  .portada__medio::after {
+    background:
+      linear-gradient(to right, rgba(5, 11, 23, .68) 0%, rgba(5, 11, 23, .3) 42%, rgba(5, 11, 23, 0) 66%),
+      linear-gradient(to top, var(--noche) 0%, rgba(5, 11, 23, .82) 16%, rgba(5, 11, 23, .4) 40%, rgba(5, 11, 23, 0) 66%);
+  }
+}
+
+.portada__contenido {
+  width: 100%;
+  max-width: var(--ancho);
+  margin: 0 auto;
+  padding: 0 var(--gutter) clamp(40px, 9vh, 96px);
+}
+.portada__titulo {
+  /* En móvil algo menos expandida para que "Tu Volkswagen" quepa en una línea */
+  font-size: clamp(32px, 9.6vw, 64px);
+  font-stretch: 112%;
+  /* Sin text-shadow: la máscara de cada línea la recortaría en un recuadro visible */
+}
+@media (min-width: 760px) {
+  .portada__titulo { font-size: clamp(64px, 8.4vw, 150px); font-stretch: 125%; }
+}
+.portada__texto {
+  max-width: 34ch;
+  margin-top: clamp(20px, 3vh, 32px);
+  color: var(--niebla);
+  font-size: clamp(17px, 1.35vw, 20px);
+  line-height: 1.5;
+}
+.portada__botones {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 32px;
+}
+@media (min-width: 560px) {
+  .portada__botones { flex-direction: row; flex-wrap: wrap; }
+}
+
+/* Entrada: el titular línea a línea, después el texto y los botones */
+.portada__titulo .linea > span {
+  animation: subir-linea 1.15s var(--salida) both;
+}
+.portada__titulo .linea:nth-child(1) > span { animation-delay: .2s; }
+.portada__titulo .linea:nth-child(2) > span { animation-delay: .32s; }
+.portada__titulo .linea:nth-child(3) > span { animation-delay: .44s; }
+.portada__texto,
+.portada__botones { animation: entrar 1.1s var(--salida) both; }
+.portada__texto { animation-delay: .7s; }
+.portada__botones { animation-delay: .82s; }
+
+@keyframes subir-linea {
+  from { transform: translateY(108%); }
+  to { transform: none; }
+}
+@keyframes entrar {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes zoom-lento {
+  from { transform: scale(1.08); }
+  to { transform: scale(1); }
+}
+
+/* Al bajar, la imagen se acerca un poco y el texto se aleja y se apaga
+   (animaciones ligadas al scroll; solo en navegadores que las soportan) */
+@supports (animation-timeline: scroll()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .portada { view-timeline: --portada block; }
+    .portada__medio {
+      animation: portada-acercar linear both;
+      animation-timeline: --portada;
+      animation-range: exit 0% exit 100%;
+    }
+    .portada__contenido {
+      animation: portada-alejar linear both;
+      animation-timeline: --portada;
+      animation-range: exit 0% exit 70%;
+    }
+  }
+}
+@keyframes portada-acercar { to { transform: scale(1.12); } }
+@keyframes portada-alejar { to { opacity: 0; transform: translateY(-12vh); } }
+
+/* =========================================================
+   2. Frase: letra gigante; las palabras se iluminan al hacer scroll
+   Con JS (.frase--animada) la sección es alta y la frase queda fija en el centro
+   mientras se recorre; js/main.js añade .encendida a cada palabra según el avance.
+   ========================================================= */
+.frase {
+  background: var(--noche);
+  color: var(--tinta);
+}
+.frase__fijo {
+  display: grid;
+  place-items: center;
+  min-height: 70vh;
+  padding: clamp(80px, 14vh, 160px) var(--gutter);
+}
+.frase__texto {
+  max-width: 14ch;
+  margin: 0 auto;
+  text-align: center;
+  font-size: clamp(40px, 9vw, 150px);
+  line-height: .98;
+  text-wrap: balance;
+}
+.palabra { transition: color .45s var(--curva); }
+
+.frase--animada { height: 190vh; height: 190svh; }
+.frase--animada .frase__fijo {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  height: 100svh;
+  min-height: 0;
+  padding-block: 0;
+}
+.frase--animada .palabra { color: #5C6880; }   /* apagada pero legible: 3,4:1 (mínimo para texto grande) */
+.frase--animada .palabra.encendida { color: var(--tinta); }
+
+/* =========================================================
+   4. Nuevos y de ocasión: la foto se abre desde un recuadro hasta la pantalla completa
+   --abre va de 0 (recuadro) a 1 (pantalla completa); lo pone js/main.js con el scroll.
+   Sin JS o con movimiento reducido: --abre = 1 y todo visible.
+   ========================================================= */
+.stock {
+  --abre: 1;
+  --texto-visible: 1;
+  position: relative;
+  background: var(--noche);
+  color: var(--tinta);
+  scroll-margin-top: 0;
+}
+.stock__fijo {
+  position: relative;
+  display: flex;
+  align-items: stretch;
+  min-height: 100vh;
+  min-height: 100svh;
+  overflow: hidden;
+  isolation: isolate;
+}
+.stock__foto {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  margin: 0;
+  /* Recuadro centrado → pantalla completa */
+  clip-path: inset(
+    calc((1 - var(--abre)) * 20%) calc((1 - var(--abre)) * 24%)
+    round calc((1 - var(--abre)) * 10px));
+}
+.stock__foto img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 58% 62%;
+  transform: scale(calc(1.18 - var(--abre) * .18));
+}
+/* Velos para leer el texto:
+   - arriba, bajo el título: crece a la vez que se abre la foto (el cielo es muy claro);
+   - abajo, bajo los puntos: aparece a la vez que el texto. */
+.stock__foto::before,
+.stock__foto::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+.stock__foto::before {
+  opacity: var(--abre);
+  background: linear-gradient(to bottom, rgba(5, 11, 23, .92) 0%, rgba(5, 11, 23, .72) 26%, rgba(5, 11, 23, .3) 44%, rgba(5, 11, 23, 0) 58%);
+}
+.stock__foto::after {
+  opacity: var(--texto-visible);
+  background: linear-gradient(to top, var(--noche) 0%, rgba(5, 11, 23, .92) 34%, rgba(5, 11, 23, .7) 52%, rgba(5, 11, 23, .2) 70%, rgba(5, 11, 23, 0) 82%);
+}
+@media (max-width: 759px) {
+  /* En móvil el texto ocupa casi toda la altura: velo más alto y más denso */
+  .stock__foto::after {
+    background: linear-gradient(to top, var(--noche) 0%, rgba(5, 11, 23, .92) 45%, rgba(5, 11, 23, .7) 70%, rgba(5, 11, 23, .3) 88%, rgba(5, 11, 23, 0) 100%);
+  }
+}
+
+.stock__contenido {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 32px;
+  width: 100%;
+  max-width: var(--ancho);
+  margin: 0 auto;
+  padding: calc(var(--alto-cabecera) + clamp(24px, 6vh, 64px)) var(--gutter) clamp(32px, 7vh, 72px);
+}
+.stock__titulo { font-size: clamp(40px, 8vw, 132px); }
+.stock__abajo {
+  opacity: var(--texto-visible);
+  transform: translateY(calc((1 - var(--texto-visible)) * 32px));
+}
+.stock__entradilla {
+  max-width: 44ch;
+  color: var(--niebla);
+  font-size: clamp(17px, 1.35vw, 20px);
+  line-height: 1.5;
+}
+/* Los cuatro puntos: texto limpio, sin cajas */
+.stock__lista {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px 24px;
+  margin: 28px 0 0;
+  padding: 0;
+  list-style: none;
+}
+@media (min-width: 1000px) {
+  .stock__lista { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 32px; margin-top: 36px; }
+}
+.stock__lista h3 {
+  font-size: clamp(17px, 1.4vw, 21px);
+  font-stretch: 112%;
+  font-weight: 650;
+  line-height: 1.2;
+}
+.stock__lista p {
+  margin-top: 6px;
+  color: var(--niebla);
+  font-size: 15px;
+  line-height: 1.5;
+}
+.stock__botones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 32px;
+}
+@media (max-width: 559px) {
+  .stock__lista p { font-size: 14px; }
+  .stock__botones .boton { flex: 1 1 100%; }
+}
+
+/* Versión animada: la sección es alta y la escena queda fija mientras la foto se abre */
+.stock--animada { height: 260vh; height: 260svh; }
+.stock--animada .stock__fijo {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  height: 100svh;
+}
+.stock--animada .stock__abajo { visibility: visible; }
+
+/* =========================================================
+   5. El taller, pieza a pieza
+   Versión base (sin JS o con movimiento reducido): todo visible, sin animación.
+   Versión animada (.taller--animado, la pone js/main.js): sección alta con un bloque
+   fijo de una pantalla; el coche cruza y los puntos aparecen según el scroll.
+   El coche va en su propia fila, debajo del texto: nunca lo tapa.
+   Usa el mismo suelo con foco y reflejo que el showroom de modelos.
+   ========================================================= */
+.taller {
+  position: relative;
+  background:
+    radial-gradient(70% 55% at 50% 100%, rgba(0, 30, 80, .45), rgba(0, 30, 80, 0) 70%),
+    var(--noche);
+  color: var(--tinta);
+  scroll-margin-top: 0;
+}
+.taller__fijo {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  max-width: var(--ancho);
+  margin: 0 auto;
+  padding: clamp(80px, 12vh, 144px) var(--gutter) clamp(32px, 6vh, 64px);
+}
+.taller__titulo { font-size: clamp(40px, 7vw, 120px); }
+.taller__entradilla {
+  margin-top: 16px;
+  color: var(--niebla);
+  font-size: clamp(17px, 1.35vw, 20px);
+}
+
+/* Los puntos: texto sobre fondo oscuro, sin tarjetas */
+.taller__piezas {
+  display: grid;
+  gap: 20px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+@media (min-width: 760px) {
+  .taller__piezas { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 40px; }
+}
+.pieza {
+  padding-top: 16px;
+  border-top: 1px solid var(--linea-oscura);
+}
+.pieza__num {
+  display: block;
+  margin-bottom: 10px;
+  color: var(--niebla-2);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: .1em;
+  font-variant-numeric: tabular-nums;
+}
+.pieza__titulo {
+  font-size: clamp(20px, 1.8vw, 26px);
+  font-stretch: 112%;
+  font-weight: 650;
+  line-height: 1.2;
+}
+.pieza__texto {
+  margin-top: 8px;
+  color: var(--niebla);
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+/* Suelo, foco y reflejo, como en el showroom */
+.taller__carretera {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  flex: 1 1 auto;
+  min-height: 0;
+  padding-bottom: clamp(56px, 9vh, 96px);  /* sitio para el reflejo */
+  isolation: isolate;
+}
+.taller__carretera::before {          /* foco de luz */
+  content: "";
+  position: absolute;
+  z-index: -2;
+  left: 50%;
+  bottom: 18%;
+  width: min(1100px, 120vw);
+  height: 140%;
+  transform: translateX(-50%);
+  background: linear-gradient(to bottom, rgba(170, 195, 235, 0), rgba(170, 195, 235, .055) 75%, rgba(170, 195, 235, 0));
+  clip-path: polygon(44% 0, 56% 0, 84% 100%, 16% 100%);
+  filter: blur(40px);
+  pointer-events: none;
+}
+.taller__carretera::after {           /* suelo iluminado */
+  content: "";
+  position: absolute;
+  z-index: -1;
+  left: 50%;
+  bottom: clamp(56px, 9vh, 96px);
+  width: min(1400px, 160vw);
+  height: 240px;
+  transform: translate(-50%, 50%);
+  background: radial-gradient(50% 50% at 50% 50%, rgba(160, 185, 225, .2), rgba(160, 185, 225, .06) 45%, rgba(160, 185, 225, 0) 72%);
+  pointer-events: none;
+}
+.taller__coche {
+  position: relative;
+  z-index: 1;
+  width: min(640px, 86vw);          /* nunca por encima de su tamaño real (640 px) */
+}
+.taller__coche img:first-child { width: 100%; height: auto; }
+.taller__coche::before {              /* sombra de contacto */
+  content: "";
+  position: absolute;
+  left: 6%;
+  right: 6%;
+  bottom: -5%;
+  height: 14%;
+  background: radial-gradient(50% 50% at 50% 50%, rgba(0, 0, 0, .75), rgba(0, 0, 0, 0) 100%);
+  z-index: -1;
+}
+
+/* ---------- Versión animada ---------- */
+.taller--animado { height: 320vh; height: 320svh; }
+.taller--animado .taller__fijo {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  height: 100svh;
+  max-width: none;
+  padding-top: calc(var(--alto-cabecera) + clamp(20px, 5vh, 56px));
+  padding-bottom: 0;
+  overflow: hidden;
+}
+.taller--animado .taller__fijo > * {
+  width: 100%;
+  max-width: calc(var(--ancho) - 2 * var(--gutter));
+  margin-inline: auto;
+}
+.taller--animado .taller__carretera { max-width: none; overflow: visible; flex: 0 1 auto; }
+/* Los puntos se agrupan justo encima del coche; el aire queda bajo el título */
+.taller--animado .taller__piezas { margin-top: auto; }
+
+.taller--animado .pieza,
+.taller--animado .taller__cita {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity .6s var(--curva), transform .8s var(--salida);
+}
+.taller--animado .pieza.visible,
+.taller--animado .taller__cita.visible,
+.taller--animado .taller__cita:focus-within {
+  opacity: 1;
+  transform: none;
+}
+.taller--animado .taller__coche { will-change: transform; }
+
+/* Pantallas bajas: coche algo más pequeño y menos hueco para el reflejo */
+@media (max-height: 720px) {
+  .taller__coche { width: min(640px, 72vw); }
+  .taller__carretera { padding-bottom: 36px; }
+  .taller__carretera::after { bottom: 36px; }
+}
+
+/* Indicador de progreso (solo móvil, lo crea js/main.js) */
+.taller__progreso { display: none; }
+
+@media (max-width: 759px) {
+  /* En móvil los puntos se muestran de uno en uno, en el mismo sitio */
+  .taller--animado .taller__piezas { grid-template-columns: 1fr; }
+  .taller--animado .pieza { grid-area: 1 / 1; }
+  .taller--animado .pieza.visible:not(.actual) { opacity: 0; transform: translateY(-16px); }
+  .taller--animado .taller__progreso {
+    display: flex;
+    gap: 6px;
+    margin-top: -14px;
+  }
+  .taller__progreso span {
+    width: 24px;
+    height: 3px;
+    border-radius: 2px;
+    background: var(--linea-oscura);
+    transition: background-color .3s var(--curva);
+  }
+  .taller__progreso span.hecho { background: var(--tinta); }
+}
+
+/* =========================================================
+   6. Servicios: lista grande a todo el ancho
+   Cada fila: número, nombre expandido, frase y flecha. Con ratón, la frase y la flecha se ven
+   al pasar por encima o con el foco; en pantallas táctiles se ven siempre y un toque abre el enlace.
+   ========================================================= */
+.servicios {
+  padding: clamp(96px, 14vh, 160px) var(--gutter);
+  background: var(--noche);
+  color: var(--tinta);
+  scroll-margin-top: 0;
+}
+.servicios__cabeza,
+.servicios__lista {
+  max-width: var(--ancho);
+  margin-inline: auto;
+}
+.servicios__titulo { font-size: clamp(44px, 7vw, 120px); }
+.servicios__entradilla {
+  margin-top: 16px;
+  color: var(--niebla);
+  font-size: clamp(17px, 1.35vw, 20px);
+}
+.servicios__lista {
+  margin-top: clamp(40px, 7vh, 80px);
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--linea-oscura);
+}
+.servicios__lista li { border-bottom: 1px solid var(--linea-oscura); }
+
+.servicio {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  grid-template-areas:
+    "num nombre flecha"
+    ".   texto  flecha";
+  align-items: center;
+  column-gap: clamp(16px, 3vw, 48px);
+  padding: clamp(22px, 3.4vh, 36px) 0;
+  color: var(--niebla);
+  text-decoration: none;
+  isolation: isolate;
+  transition: color .35s var(--curva);
+}
+/* Luz que entra desde la izquierda al iluminarse la fila */
+.servicio::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: 0 calc(-1 * var(--gutter));
+  background: linear-gradient(90deg, rgba(150, 180, 230, .11), rgba(150, 180, 230, .03) 60%, rgba(150, 180, 230, 0));
+  opacity: 0;
+  transition: opacity .45s var(--curva);
+}
+.servicio__num {
+  grid-area: num;
+  align-self: start;
+  padding-top: .9em;
+  color: var(--niebla-2);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: .1em;
+  font-variant-numeric: tabular-nums;
+}
+.servicio__titulo {
+  grid-area: nombre;
+  font-size: clamp(30px, 5.4vw, 88px);
+  font-stretch: 125%;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -.035em;
+  transition: transform .5s var(--salida);
+}
+.servicio__texto {
+  grid-area: texto;
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  color: var(--niebla);
+  font-size: clamp(16px, 1.3vw, 19px);
+  line-height: 1.5;
+  transition: max-height .5s var(--salida), opacity .35s var(--curva), margin-top .5s var(--salida);
+}
+.servicio__flecha {
+  grid-area: flecha;
+  display: grid;
+  place-items: center;
+  width: clamp(44px, 4.4vw, 64px);
+  height: clamp(44px, 4.4vw, 64px);
+  border: 1px solid rgba(255, 255, 255, .28);
+  border-radius: 50%;
+  color: var(--tinta);
+  opacity: 0;
+  transform: translateX(-16px);
+  transition: opacity .35s var(--curva), transform .5s var(--salida), background-color .3s var(--curva);
+}
+/* Fila iluminada */
+.servicio:hover,
+.servicio:focus-visible { color: var(--tinta); }
+.servicio:hover::before,
+.servicio:focus-visible::before { opacity: 1; }
+.servicio:hover .servicio__titulo,
+.servicio:focus-visible .servicio__titulo { transform: translateX(12px); }
+.servicio:hover .servicio__texto,
+.servicio:focus-visible .servicio__texto { max-height: 4em; opacity: 1; margin-top: 10px; }
+.servicio:hover .servicio__flecha,
+.servicio:focus-visible .servicio__flecha { opacity: 1; transform: none; }
+/* Pantallas táctiles: sin "pasar por encima", así que la frase y la flecha se ven siempre */
+@media (hover: none) {
+  .servicio { color: var(--tinta); }
+  .servicio__texto { max-height: none; opacity: 1; margin-top: 8px; }
+  .servicio__flecha { opacity: 1; transform: none; }
+  .servicio:active::before { opacity: 1; }   /* breve destello al tocar */
+}
+.servicio:hover .servicio__flecha { background: var(--tinta); color: var(--noche); }
+.servicio:focus-visible { outline-offset: 6px; }
+/* Mientras una fila está iluminada, las demás se apagan un poco */
+.servicios__lista:hover .servicio:not(:hover) { color: var(--niebla-2); }
+
+@media (max-width: 559px) {
+  .servicio { grid-template-columns: 1fr auto; grid-template-areas: "nombre flecha" "texto flecha"; }
+  .servicio__num { display: none; }
+}
+
+/* =========================================================
+   7. Nosotros: el 1900 gigante y la ficha como lista limpia
+   ========================================================= */
+.nosotros {
+  position: relative;
+  padding: clamp(96px, 14vh, 160px) var(--gutter);
+  background:
+    radial-gradient(60% 45% at 30% 20%, rgba(0, 30, 80, .4), rgba(0, 30, 80, 0) 70%),
+    var(--noche);
+  color: var(--tinta);
+  overflow: hidden;
+  scroll-margin-top: 0;
+}
+.nosotros__dentro { max-width: var(--ancho); margin: 0 auto; }
+.nosotros__titulo {
+  color: var(--niebla);
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+}
+.nosotros__anio {
+  margin: clamp(8px, 2vh, 24px) 0 0 -.04em;
+  font-size: clamp(120px, 30vw, 500px);
+  line-height: .8;
+  letter-spacing: -.05em;
+  color: transparent;
+  background: linear-gradient(to bottom, #FFFFFF 10%, rgba(205, 220, 245, .55) 95%);
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+.nosotros__anio .linea { padding-bottom: .02em; }
+.nosotros__origen {
+  max-width: 30ch;
+  margin-top: clamp(16px, 3vh, 32px);
+  font-size: clamp(20px, 2vw, 30px);
+  font-stretch: 112%;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.nosotros__rejilla {
+  display: grid;
+  gap: 48px;
+  margin-top: clamp(56px, 10vh, 120px);
+  padding-top: 32px;
+  border-top: 1px solid var(--linea-oscura);
+}
+@media (min-width: 1000px) {
+  .nosotros__rejilla { grid-template-columns: 5fr 7fr; gap: clamp(48px, 7vw, 128px); }
+}
+.nosotros__texto > p {
+  max-width: 44ch;
+  color: var(--niebla);
+  font-size: 17px;
+  line-height: 1.6;
+}
+.nosotros__texto > p + p { margin-top: 16px; }
+.nosotros__texto > .nosotros__entradilla {
+  color: var(--tinta);
+  font-size: clamp(20px, 1.8vw, 26px);
+  line-height: 1.35;
+}
+.nosotros__botones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 32px;
+}
+@media (max-width: 559px) {
+  .nosotros__botones .boton { flex: 1 1 100%; }
+}
+
+/* Ficha: lista limpia, sin caja */
+.ficha__titulo {
+  margin-bottom: 8px;
+  color: var(--niebla);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+.ficha__datos { margin: 0; }
+.ficha__datos > div {
+  display: grid;
+  grid-template-columns: minmax(120px, 34%) 1fr;
+  gap: 16px;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--linea-oscura);
+}
+.ficha__datos dt { color: var(--niebla); font-size: 15px; }
+.ficha__datos dd { margin: 0; color: var(--tinta); font-size: 17px; line-height: 1.45; }
+.ficha__datos a { text-decoration-color: rgba(255, 255, 255, .35); text-underline-offset: 4px; }
+.ficha__datos a:hover { text-decoration-color: currentColor; }
+
+/* =========================================================
+   8. Contacto: formulario oscuro con campos subrayados y red como lista
+   ========================================================= */
+.contacto {
+  padding: clamp(96px, 14vh, 160px) var(--gutter);
+  background: var(--noche);
+  color: var(--tinta);
+  scroll-margin-top: 0;
+}
+.contacto__rejilla,
+.red {
+  max-width: var(--ancho);
+  margin-inline: auto;
+}
+.contacto__rejilla { display: grid; gap: 56px; }
+@media (min-width: 1000px) {
+  .contacto__rejilla { grid-template-columns: 5fr 7fr; align-items: start; gap: clamp(48px, 7vw, 128px); }
+  /* Los datos de contacto acompañan al formulario mientras se rellena */
+  .contacto__info { position: sticky; top: calc(var(--alto-cabecera) + 40px); }
+}
+.contacto__titulo { font-size: clamp(44px, 7vw, 120px); }
+.contacto__entradilla {
+  margin-top: 16px;
+  color: var(--niebla);
+  font-size: clamp(17px, 1.35vw, 20px);
+}
+.contacto__datos { margin: 36px 0 0; }
+.contacto__datos > div { padding: 16px 0; border-top: 1px solid var(--linea-oscura); }
+.contacto__datos dt { color: var(--niebla); font-size: 15px; }
+.contacto__datos dd { margin: 4px 0 0; font-size: 18px; line-height: 1.45; }
+.contacto__telefono {
+  font-size: clamp(28px, 2.8vw, 40px);
+  font-stretch: 112%;
+  font-weight: 650;
+  text-decoration: none;
+}
+.contacto__telefono:hover { text-decoration: underline; text-underline-offset: 6px; }
+.enlace-flecha {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  font-weight: 600;
+  text-decoration: none;
+}
+.enlace-flecha:hover { text-decoration: underline; text-underline-offset: 4px; }
+.enlace-flecha:hover .icono--flecha { transform: translateX(4px); }
+
+/* ---------- Formulario ---------- */
+.formulario { display: grid; gap: 28px; }
+.formulario__titulo {
+  font-size: clamp(24px, 2.2vw, 32px);
+  font-stretch: 112%;
+  font-weight: 650;
+}
+.formulario__fila { display: grid; gap: 28px; }
+@media (min-width: 640px) { .formulario__fila { grid-template-columns: 1fr 1fr; } }
+.campo { display: grid; gap: 4px; align-content: start; }
+.campo label {
+  color: var(--niebla);
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: .02em;
+}
+.campo__opcional { color: var(--niebla-2); font-weight: 400; }
+/* Campos solo subrayados, con letra grande */
+.campo input:not([type="checkbox"]),
+.campo select,
+.campo textarea {
+  width: 100%;
+  min-height: 52px;
+  padding: 8px 0 10px;
+  border: 0;
+  border-bottom: 1px solid rgba(190, 210, 240, .35);
+  border-radius: 0;
+  background: transparent;
+  color: var(--tinta);
+  font: inherit;
+  font-size: clamp(19px, 1.5vw, 22px);   /* además evita el zoom automático de iOS */
+  transition: border-color .25s var(--curva), box-shadow .25s var(--curva);
+}
+.campo textarea { resize: vertical; min-height: 96px; }
+.campo select {
+  appearance: none;
+  padding-right: 36px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23F2F5FA' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 4px center;
+  background-size: 22px;
+}
+.campo select option { background: var(--noche-2); color: var(--tinta); }
+.campo input:hover, .campo select:hover, .campo textarea:hover { border-bottom-color: rgba(190, 210, 240, .7); }
+.campo input:focus-visible, .campo select:focus-visible, .campo textarea:focus-visible {
+  outline: none;
+  border-bottom-color: var(--tinta);
+  box-shadow: 0 1px 0 var(--tinta);
+}
+.campo [aria-invalid="true"] { border-bottom-color: var(--error-oscuro); box-shadow: 0 1px 0 var(--error-oscuro); }
+.campo__error { margin-top: 6px; color: var(--error-oscuro); font-size: 15px; }
+.formulario input, .formulario select, .formulario textarea, .formulario__estado {
+  scroll-margin-top: calc(var(--alto-cabecera) + 24px);
+  scroll-margin-bottom: 24px;
+}
+
+.campo--casilla { grid-template-columns: auto 1fr; align-items: start; column-gap: 14px; }
+.campo--casilla input {
+  appearance: none;
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  margin: 0;
+  border: 1.5px solid rgba(190, 210, 240, .6);
+  border-radius: 4px;
+  background: transparent;
+  cursor: pointer;
+}
+.campo--casilla input::after {
+  content: "";
+  width: 6px;
+  height: 11px;
+  margin-top: -3px;
+  border: solid var(--noche);
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg) scale(0);
+  transition: transform .2s var(--salida);
+}
+.campo--casilla input:checked { background: var(--tinta); border-color: var(--tinta); }
+.campo--casilla input:checked::after { transform: rotate(45deg) scale(1); }
+.campo--casilla input:focus-visible { outline: 2px solid var(--tinta); outline-offset: 3px; }
+.campo--casilla input[aria-invalid="true"] { border-color: var(--error-oscuro); }
+.campo--casilla label { color: var(--tinta); font-size: 16px; font-weight: 400; line-height: 1.45; letter-spacing: 0; }
+.campo--casilla label a { text-underline-offset: 3px; }
+.campo--casilla .campo__error { grid-column: 2; }
+.campo-trampa { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+
+/* Información de protección de datos: texto claro y legible, sin caja */
+.formulario__legal {
+  padding-top: 16px;
+  border-top: 1px solid var(--linea-oscura);
+  color: var(--niebla);
+  font-size: 14px;
+  line-height: 1.55;
+}
+.formulario__legal strong { color: var(--tinta); font-weight: 600; }
+.formulario__legal dl { margin: 8px 0 0; }
+.formulario__legal dl > div { display: grid; grid-template-columns: 108px 1fr; gap: 12px; padding: 3px 0; }
+.formulario__legal dt { color: var(--tinta); }
+.formulario__legal dd { margin: 0; }
+.formulario__legal a { color: var(--tinta); }
+@media (max-width: 479px) {
+  .formulario__legal dl > div { grid-template-columns: 1fr; gap: 0; padding: 6px 0; }
+}
+.formulario__enviar { justify-self: start; min-width: 180px; }
+.formulario__enviar[disabled] { opacity: .6; cursor: progress; }
+.formulario__estado {
+  padding: 14px 16px;
+  border-left: 3px solid var(--tinta);
+  background: var(--noche-2);
+  color: var(--tinta);
+  font-size: 16px;
+  line-height: 1.5;
+}
+.formulario__estado--error { border-left-color: var(--error-oscuro); }
+
+/* ---------- Red de concesionarios: lista limpia ---------- */
+.red { margin-top: clamp(72px, 12vh, 140px); }
+.red__titulo {
+  font-size: clamp(28px, 3.2vw, 48px);
+  font-stretch: 125%;
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -.03em;
+}
+.red__aviso { margin-top: 12px; color: var(--niebla); font-size: 17px; }
+.red__lista {
+  margin: 32px 0 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--linea-oscura);
+}
+.sede {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 4px 32px;
+  padding: 20px 0;
+  border-bottom: 1px solid var(--linea-oscura);
+}
+@media (min-width: 760px) {
+  .sede { grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.4fr) auto; align-items: baseline; }
+}
+.sede__nombre {
+  margin: 0;
+  font-size: clamp(20px, 1.8vw, 26px);
+  font-stretch: 112%;
+  font-weight: 650;
+  line-height: 1.2;
+}
+.sede__direccion { color: var(--niebla); font-size: 16px; }
+.sede__telefono {
+  font-size: clamp(18px, 1.5vw, 22px);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.sede__telefono:hover { text-decoration: underline; text-underline-offset: 5px; }
+
+/* =========================================================
+   9. Pie: azul noche y ALHAMAUTO enorme a todo el ancho
+   ========================================================= */
+.pie {
+  padding: clamp(56px, 9vh, 96px) var(--gutter) 0;
+  background: var(--noche);
+  color: var(--niebla);
+  font-size: 15px;
+  line-height: 1.6;
+  border-top: 1px solid var(--linea-oscura);
+  overflow: hidden;
+}
+.pie__dentro { max-width: var(--ancho); margin: 0 auto; }
+.pie a { color: var(--tinta); text-decoration: none; }
+.pie a:hover { text-decoration: underline; text-underline-offset: 4px; }
+.pie :focus-visible { outline-color: var(--tinta); }
+.pie a[href^="tel:"] { white-space: nowrap; } /* los teléfonos no se parten */
+/* Enlaces dentro de una línea de texto: subrayado suave, no solo color */
+.pie__columna li a[href^="tel:"] {
+  text-decoration: underline;
+  text-decoration-color: rgba(255, 255, 255, .35);
+  text-underline-offset: 4px;
+}
+.pie__columna li a[href^="tel:"]:hover { text-decoration-color: currentColor; }
+
+.pie__arriba {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding-bottom: 32px;
+  border-bottom: 1px solid var(--linea-oscura);
+}
+.pie__lema {
+  color: var(--tinta);
+  font-size: clamp(18px, 1.6vw, 24px);
+  font-stretch: 112%;
+  font-weight: 650;
+}
+.pie__subir { display: inline-flex; align-items: center; gap: 8px; white-space: nowrap; }
+.pie__subir .icono { width: 20px; height: 20px; }
+
+.pie__columnas { display: grid; gap: 32px; padding: 40px 0; }
+@media (min-width: 760px) { .pie__columnas { grid-template-columns: repeat(3, 1fr); gap: 48px; } }
+.pie__titulo { margin-bottom: 14px; color: var(--tinta); font-size: 15px; font-weight: 600; }
+.pie__columna ul { margin: 0; padding: 0; list-style: none; }
+.pie__columna li + li { margin-top: 8px; }
+.pie__direccion { font-style: normal; }
+.pie__direccion a { display: inline-block; margin-top: 8px; font-size: 18px; font-weight: 600; }
+
+.pie__abajo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 12px 32px;
+  padding-top: 24px;
+  border-top: 1px solid var(--linea-oscura);
+  color: var(--niebla);
+  font-size: 13px;
+}
+.pie__legal { display: flex; flex-wrap: wrap; gap: 8px 24px; margin: 0; padding: 0; list-style: none; }
+.pie__marca-registrada { flex-basis: 100%; }
+@media (min-width: 1000px) { .pie__marca-registrada { flex-basis: auto; margin-left: auto; } }
+
+/* La palabra enorme: ocupa exactamente el ancho de la pantalla */
+.pie__gigante {
+  display: block;
+  width: calc(100% + 2 * var(--gutter));
+  max-width: none;   /* la regla base svg { max-width: 100% } lo dejaría dentro de los márgenes */
+  height: auto;
+  margin: clamp(32px, 6vh, 64px) calc(-1 * var(--gutter)) 0;
+  aspect-ratio: 1000 / 150;
+  overflow: visible;
+}
+.pie__gigante text {
+  font-family: var(--fuente);
+  font-size: 170px;
+  font-stretch: 125%;
+  font-weight: 800;
+  letter-spacing: -.02em;
+  fill: rgba(205, 220, 245, .14);
+}
+
+/* Texto solo para lectores de pantalla */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Botones sobre fondo blanco */
+.boton--oscuro { background: var(--negro); color: var(--blanco); }
+.boton--oscuro:hover { background: #2A3238; }
+.boton--contorno { border-color: var(--texto); color: var(--texto); background: transparent; }
+.boton--contorno:hover { background: var(--gris); }
+
+/* =========================================================
+   Aparición suave al hacer scroll (reutilizable: clase .revelar)
+   Solo se oculta si hay JS (html.js); sin JS todo se ve.
+   ========================================================= */
+.js .revelar {
+  opacity: 0;
+  transform: translateY(32px);
+  transition: opacity 1s var(--curva), transform 1.2s cubic-bezier(.2, .7, .2, 1);
+}
+.js .revelar.revelado {
+  opacity: 1;
+  transform: none;
+}
+
+/* =========================================================
+   3. Modelos: showroom oscuro
+   Un modelo cada vez: el coche sobre un suelo con un foco suave y su reflejo,
+   el nombre gigante detrás y flechas o miniaturas para cambiar.
+   Sin JS se ven todos en una fila con desplazamiento horizontal.
+   RESOLUCIÓN: cada coche se muestra como máximo a su ancho real en píxeles (--ancho-real),
+   para que no se vea borroso. Con imágenes oficiales más grandes, basta con subir ese valor.
+   ========================================================= */
+.showroom {
+  position: relative;
+  padding: calc(var(--alto-cabecera) + clamp(16px, 4vh, 48px)) 0 clamp(56px, 8vh, 96px);
+  background:
+    radial-gradient(70% 55% at 50% 0%, rgba(0, 30, 80, .55), rgba(0, 30, 80, 0) 70%),
+    var(--noche);
+  color: var(--tinta);
+  overflow: hidden;
+  scroll-margin-top: 0;
+}
+.showroom__cabeza {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  max-width: var(--ancho);
+  margin: 0 auto;
+  padding: 0 var(--gutter);
+}
+.showroom__titulo { font-size: clamp(44px, 5.6vw, 96px); }
+.showroom__contador {
+  color: var(--niebla);
+  font-size: 15px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: .08em;
+  white-space: nowrap;
+}
+.showroom__contador b { color: var(--tinta); font-weight: 600; }
+
+/* ---------- Escena ---------- */
+.showroom__lista {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.vehiculo { position: relative; }
+.vehiculo__escena {
+  position: relative;
+  display: grid;
+  place-items: end center;
+  height: clamp(280px, 46vh, 520px);
+  isolation: isolate;
+}
+/* Foco de luz que cae desde arriba */
+.vehiculo__escena::before {
+  content: "";
+  position: absolute;
+  z-index: -2;
+  left: 50%;
+  bottom: 12%;
+  width: min(1100px, 120vw);
+  height: 120%;
+  transform: translateX(-50%);
+  background: linear-gradient(to bottom, rgba(170, 195, 235, 0), rgba(170, 195, 235, .055) 75%, rgba(170, 195, 235, 0));
+  clip-path: polygon(44% 0, 56% 0, 84% 100%, 16% 100%);
+  filter: blur(40px);
+  pointer-events: none;
+}
+/* Suelo: elipse iluminada bajo el coche */
+.vehiculo__escena::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  left: 50%;
+  bottom: 0;
+  width: min(1200px, 140vw);
+  height: 46%;
+  transform: translate(-50%, 34%);
+  background: radial-gradient(50% 50% at 50% 50%, rgba(160, 185, 225, .2), rgba(160, 185, 225, .06) 45%, rgba(160, 185, 225, 0) 72%);
+  pointer-events: none;
+}
+
+/* Nombre gigante detrás del coche */
+.vehiculo__fondo {
+  position: absolute;
+  z-index: -1;
+  left: 0;
+  right: 0;
+  top: 2%;
+  margin: 0;
+  text-align: center;
+  font-size: clamp(72px, 17vw, 320px);
+  font-stretch: 125%;
+  font-weight: 800;
+  line-height: .9;
+  letter-spacing: -.045em;
+  white-space: nowrap;
+  color: transparent;
+  background: linear-gradient(to bottom, rgba(205, 220, 245, .2), rgba(205, 220, 245, .03) 85%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  user-select: none;
+  pointer-events: none;
+}
+
+/* Coche, sombra de contacto y reflejo */
+.vehiculo__coche {
+  --ancho-real: 640px;
+  position: relative;
+  width: min(var(--ancho-real), 78vw);
+  margin: 0 0 9%;
+}
+.vehiculo__coche img { width: 100%; height: auto; }
+.vehiculo__coche::before {               /* sombra de contacto bajo las ruedas */
+  content: "";
+  position: absolute;
+  left: 6%;
+  right: 6%;
+  bottom: -5%;
+  height: 14%;
+  background: radial-gradient(50% 50% at 50% 50%, rgba(0, 0, 0, .75), rgba(0, 0, 0, 0) 100%);
+  z-index: -1;
+}
+.vehiculo__reflejo {
+  position: absolute;
+  left: 0;
+  top: 100%;
+  width: 100%;
+  height: auto;                    /* mantener la proporción (si no, coge el alto del atributo HTML) */
+  transform: scaleY(-1);           /* volteado sobre su centro: queda debajo, como en un suelo pulido */
+  margin-top: -2px;
+  opacity: .22;
+  -webkit-mask-image: linear-gradient(to top, rgba(0, 0, 0, .9) 0%, rgba(0, 0, 0, 0) 45%);
+  mask-image: linear-gradient(to top, rgba(0, 0, 0, .9) 0%, rgba(0, 0, 0, 0) 45%);
+  pointer-events: none;
+}
+
+/* Datos del modelo */
+.vehiculo__info {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px 32px;
+  max-width: var(--ancho);
+  margin: 0 auto;
+  padding: 0 var(--gutter);
+}
+.vehiculo__nombre {
+  font-size: clamp(30px, 3.4vw, 48px);
+  font-stretch: 125%;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -.03em;
+}
+.vehiculo__categoria {
+  margin-top: 8px;
+  color: var(--niebla);
+  font-size: 16px;
+}
+.vehiculo__pregunta {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 0;
+  font-size: 16px;
+  font-weight: 600;
+  text-decoration: underline;
+  text-decoration-color: rgba(255, 255, 255, .3);
+  text-underline-offset: 6px;
+  transition: text-decoration-color .2s var(--curva);
+}
+.vehiculo__pregunta:hover { text-decoration-color: currentColor; }
+.vehiculo__pregunta:hover .icono--flecha { transform: translateX(4px); }
+
+/* ---------- Mandos: flechas y miniaturas ---------- */
+.showroom__mandos {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  max-width: var(--ancho);
+  margin: clamp(28px, 4vh, 48px) auto 0;
+  padding: 0 var(--gutter);
+}
+.showroom__flechas { display: flex; gap: 8px; flex: none; }
+.flecha {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  border: 1px solid rgba(255, 255, 255, .22);
+  border-radius: var(--radio);
+  background: transparent;
+  color: var(--tinta);
+  cursor: pointer;
+  transition: background-color .2s var(--curva), border-color .2s var(--curva);
+}
+.flecha:hover { background: rgba(255, 255, 255, .08); border-color: rgba(255, 255, 255, .6); }
+
+.showroom__miniaturas {
+  display: flex;
+  gap: 4px;
+  margin: 0;
+  padding: 0 0 4px;
+  list-style: none;
+  overflow-x: auto;
+  scrollbar-width: none;
+  scroll-snap-type: x proximity;
+}
+.showroom__miniaturas::-webkit-scrollbar { display: none; }
+.miniatura {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  width: 104px;
+  padding: 10px 8px 12px;
+  border: 0;
+  border-radius: var(--radio);
+  background: transparent;
+  color: var(--niebla-2);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  scroll-snap-align: start;
+  transition: color .25s var(--curva), background-color .25s var(--curva);
+}
+.miniatura img {
+  width: 84px;
+  height: 34px;
+  object-fit: contain;
+  opacity: .45;
+  transition: opacity .25s var(--curva), transform .4s var(--salida);
+}
+.miniatura::after {               /* raya bajo la miniatura activa */
+  content: "";
+  width: 24px;
+  height: 2px;
+  border-radius: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transition: transform .35s var(--salida);
+}
+.miniatura:hover { color: var(--niebla); }
+.miniatura:hover img { opacity: .8; }
+.miniatura[aria-current="true"] { color: var(--tinta); }
+.miniatura[aria-current="true"] img { opacity: 1; transform: translateY(-2px); }
+.miniatura[aria-current="true"]::after { transform: none; }
+
+/* ---------- Con JS: un modelo cada vez, con transición ---------- */
+.js .showroom__lista {
+  display: grid;
+  margin-top: clamp(8px, 2vh, 24px);
+}
+.js .vehiculo {
+  grid-area: 1 / 1;
+  visibility: hidden;
+}
+.js .vehiculo.activo { visibility: visible; }
+
+.js .vehiculo .vehiculo__fondo,
+.js .vehiculo .vehiculo__coche,
+.js .vehiculo .vehiculo__info {
+  opacity: 0;
+  transition: opacity .55s var(--curva), transform .9s var(--salida), translate .9s var(--salida);
+}
+/* Entra desde el lado hacia el que se avanza; el que sale se va hacia el otro */
+.js .vehiculo .vehiculo__coche { transform: translateX(calc(var(--sentido, 1) * 14vw)); }
+.js .vehiculo .vehiculo__fondo { translate: calc(var(--sentido, 1) * 6vw) 0; }
+.js .vehiculo .vehiculo__info { transform: translateY(16px); }
+.js .vehiculo.saliendo { visibility: visible; }
+.js .vehiculo.saliendo .vehiculo__coche { transform: translateX(calc(var(--sentido, 1) * -14vw)); }
+.js .vehiculo.saliendo .vehiculo__fondo { translate: calc(var(--sentido, 1) * -6vw) 0; }
+
+.js .vehiculo.activo .vehiculo__fondo,
+.js .vehiculo.activo .vehiculo__coche,
+.js .vehiculo.activo .vehiculo__info { opacity: 1; transform: none; translate: 0 0; }
+.js .vehiculo.activo .vehiculo__coche { transition-delay: .06s; }
+.js .vehiculo.activo .vehiculo__info { transition-delay: .18s; }
+
+/* ---------- Sin JS: fila con desplazamiento horizontal ---------- */
+html:not(.js) .showroom__lista {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+}
+html:not(.js) .vehiculo { flex: 0 0 100%; scroll-snap-align: start; }
+html:not(.js) .showroom__mandos { display: none; }
+
+@media (max-width: 759px) {
+  .showroom__mandos { flex-direction: column; align-items: stretch; gap: 12px; }
+  .showroom__flechas { justify-content: space-between; order: 2; }
+  .flecha { width: 48px; height: 48px; }
+  .vehiculo__coche { width: min(var(--ancho-real), 86vw); }
+  .vehiculo__escena { height: clamp(220px, 34vh, 320px); }
+  /* Nombre y enlace siempre apilados: todos los modelos miden lo mismo y no hay saltos */
+  .vehiculo__info { flex-direction: column; align-items: flex-start; gap: 4px; }
+  .showroom__mandos { margin-top: 20px; }
+}
+
+/* Lectores de pantalla: anuncia el modelo que se muestra */
+.showroom__aviso {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* Titulares que entran línea a línea al aparecer (sección de modelos y siguientes) */
+.js .revelar-lineas .linea > span {
+  transform: translateY(108%);
+  transition: transform 1.1s var(--salida);
+}
+.js .revelar-lineas .linea:nth-child(2) > span { transition-delay: .1s; }
+.js .revelar-lineas .linea:nth-child(3) > span { transition-delay: .2s; }
+.js .revelar-lineas.revelado .linea > span { transform: none; }
+
+/* ---------- Movimiento reducido ---------- */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    animation-delay: 0s !important;
+    transition-duration: .01ms !important;
+  }
+  .js .revelar { opacity: 1; transform: none; }
+  .linea > span, .js .revelar-lineas .linea > span { transform: none !important; animation: none !important; }
+  .menu__lista li { opacity: 1; transform: none; }
+  .palabra { transition: none; }
+  .stock__foto img { transform: none; }
+  .js .vehiculo .vehiculo__fondo, .js .vehiculo .vehiculo__coche, .js .vehiculo .vehiculo__info { transform: none !important; translate: 0 0 !important; }
+}

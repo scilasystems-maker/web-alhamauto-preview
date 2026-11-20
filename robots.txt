@@ -1,0 +1,3 @@
+# Vista previa para el cliente: no indexar. Cambiar al publicar la web definitiva.
+User-agent: *
+Disallow: /
