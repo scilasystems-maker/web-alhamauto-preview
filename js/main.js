@@ -451,43 +451,79 @@
   }
 
   /* ---------- Botón flotante de WhatsApp ---------- */
-  // Visible solo cuando la portada ya ha quedado atrás, y se aparta mientras haya algún
-  // botón importante en la franja de abajo de la pantalla (para no taparlo).
+  // Oculto solo en la portada; después, siempre visible.
+  // Si al hacer scroll un botón importante pasa por debajo, el de WhatsApp sube con un
+  // movimiento suave lo justo para quedar por encima de él, y vuelve a su sitio cuando ya
+  // no coinciden. No se esconde.
   var whatsapp = document.getElementById('whatsapp');
   if (whatsapp && 'IntersectionObserver' in window) {
-    var portadaVista = true;
-    var protegidosEnFranja = [];
-    var actualizarWhatsapp = function () {
-      whatsapp.classList.toggle('visible', !portadaVista && !protegidosEnFranja.length);
+    var SEPARACION = 12;   // px entre el botón de WhatsApp y el botón que esquiva
+    // Respaldo: el CSS ya deja un carril libre a la derecha; esto solo actúa si algo lo invade
+    var PROTEGIDOS = 'a.boton, button.boton, .campo--casilla input, .campo--casilla label a, ' +
+      '.showroom__flechas .flecha, .miniatura, .vehiculo.activo .vehiculo__pregunta, .servicio__flecha, ' +
+      '.sede__telefono, .ficha__datos a, .enlace-flecha, .pie a';
+    var elevacion = 0;
+    var pendienteWa = false;
+
+    var colocarWhatsapp = function () {
+      pendienteWa = false;
+      // Posición de reposo (sin elevar)
+      // (del CSS, no de la posición en pantalla, que cambia mientras se anima)
+      var r = whatsapp.getBoundingClientRect();
+      var izq = r.left, der = r.right, alto = whatsapp.offsetHeight;
+      var abajo = window.innerHeight - parseFloat(getComputedStyle(whatsapp).bottom);
+      var visibleDeVerdad = function (el) {   // las flechas de servicios en escritorio solo se ven al pasar el ratón
+        for (var x = el; x && x !== document.body; x = x.parentElement) {
+          var cs = getComputedStyle(x);
+          if (parseFloat(cs.opacity) < 0.3 || cs.visibility === 'hidden') return false;
+        }
+        return true;
+      };
+      var cajas = [].filter.call(document.querySelectorAll(PROTEGIDOS), function (el) { return el !== whatsapp && !whatsapp.contains(el); })
+        .map(function (el) {
+          // Lo que queda fuera de una tira con desplazamiento horizontal (miniaturas) no se ve: se recorta
+          var b = el.getBoundingClientRect();
+          var tira = el.closest('.showroom__miniaturas');
+          if (tira) {
+            var t = tira.getBoundingClientRect();
+            var l = Math.max(b.left, t.left), r2 = Math.min(b.right, t.right);
+            b = { left: l, right: r2, top: b.top, bottom: b.bottom, width: Math.max(0, r2 - l), height: b.height };
+          }
+          return { el: el, b: b };
+        })
+        .filter(function (o) { var b = o.b; return b.width && b.height && b.right > izq - 4 && b.left < der + 4 && b.bottom > 0 && b.top < innerHeight && visibleDeVerdad(o.el); })
+        .map(function (o) { return o.b; });
+      // Subir lo justo para no coincidir con ninguno (varias vueltas por si hay botones apilados)
+      var subir = 0;
+      for (var vuelta = 0; vuelta < 6; vuelta++) {
+        var abajoBoton = abajo - subir, arribaBoton = abajoBoton - alto, cambio = false;
+        cajas.forEach(function (b) {
+          if (b.bottom + SEPARACION > arribaBoton && b.top - SEPARACION < abajoBoton) {
+            subir = Math.max(subir, abajo - b.top + SEPARACION);
+            cambio = true;
+          }
+        });
+        if (!cambio) break;
+      }
+      subir = Math.min(subir, innerHeight * 0.6);
+      if (Math.abs(subir - elevacion) > 0.5) {
+        elevacion = subir;
+        whatsapp.style.setProperty('--subir', (-subir).toFixed(1) + 'px');
+      }
     };
+    var pedirColocar = function () {
+      if (!pendienteWa) { pendienteWa = true; requestAnimationFrame(colocarWhatsapp); }
+    };
+
     new IntersectionObserver(function (e) {
       // "Bajar de la portada": cuando queda menos de un 15 % de ella a la vista
-      portadaVista = e[0].intersectionRatio > 0.15;
-      actualizarWhatsapp();
+      whatsapp.classList.toggle('visible', e[0].intersectionRatio <= 0.15);
+      pedirColocar();
     }, { threshold: [0, 0.15, 0.3] }).observe(document.getElementById('inicio'));
-
-    // Franja inferior de 120 px: lo que el botón podría tapar
-    var franja = function () { return '-' + Math.max(0, window.innerHeight - 120) + 'px 0px 0px 0px'; };
-    var crearVigia = function () {
-      var vigia = new IntersectionObserver(function (entradas) {
-        entradas.forEach(function (en) {
-          var i = protegidosEnFranja.indexOf(en.target);
-          if (en.isIntersecting && i < 0) protegidosEnFranja.push(en.target);
-          if (!en.isIntersecting && i >= 0) protegidosEnFranja.splice(i, 1);
-        });
-        actualizarWhatsapp();
-      }, { rootMargin: franja() });
-      document.querySelectorAll('.formulario__enviar, .formulario__estado, .campo--casilla, .showroom__flechas, .taller__cita, .nosotros__botones, .stock__botones, .pie__abajo, .servicio__flecha')
-        .forEach(function (el) { vigia.observe(el); });
-      return vigia;
-    };
-    var vigiaActual = crearVigia();
-    var altoAnterior = window.innerHeight;
-    window.addEventListener('resize', function () {
-      if (Math.abs(window.innerHeight - altoAnterior) < 80) return; // la barra del móvil al hacer scroll
-      altoAnterior = window.innerHeight;
-      vigiaActual.disconnect(); protegidosEnFranja = []; vigiaActual = crearVigia();
-    });
+    window.addEventListener('scroll', pedirColocar, { passive: true });
+    window.addEventListener('resize', pedirColocar);
+    document.addEventListener('click', function () { setTimeout(pedirColocar, 950); }); // el showroom cambia de modelo
+    pedirColocar();
   }
 
   /* ---------- Portada: vídeo de YouTube en bucle con la foto como respaldo ---------- */

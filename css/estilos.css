@@ -1407,9 +1407,11 @@ p { margin: 0; }
 /* =========================================================
    Botón flotante de WhatsApp
    Cristal azul noche con el icono blanco; el verde de WhatsApp solo en un aro fino.
-   Oculto en la portada; .visible (js/main.js) lo trae con fundido.
+   Oculto en la portada; .visible (js/main.js) lo trae con fundido. --subir lo eleva con
+   suavidad por encima de un botón importante que pase por debajo.
    ========================================================= */
 .whatsapp {
+  --subir: 0px;
   position: fixed;
   z-index: 45;                         /* por debajo de la cabecera (50) y del menú (60–70) */
   right: max(16px, env(safe-area-inset-right));
@@ -1432,26 +1434,46 @@ p { margin: 0; }
   text-decoration: none;
   opacity: 0;
   visibility: hidden;
-  transform: translateY(12px);
-  transition: opacity .45s var(--curva), transform .6s var(--salida), visibility 0s linear .45s,
+  transform: translateY(calc(var(--subir) + 12px));
+  transition: opacity .45s var(--curva), transform .35s var(--curva), visibility 0s linear .45s,
               background-color .25s var(--curva), border-color .25s var(--curva);
 }
 .whatsapp svg { width: 24px; height: 24px; flex: none; }
 .whatsapp.visible {
   opacity: 1;
   visibility: visible;
-  transform: none;
+  transform: translateY(var(--subir));
   transition-delay: 0s;
 }
 .whatsapp:hover { background: rgba(18, 32, 58, .92); border-color: #25D366; }
 .whatsapp:focus-visible { outline: 2px solid var(--tinta); outline-offset: 4px; }
-/* En el móvil, solo el icono (círculo) */
-@media (max-width: 759px) {
-  .whatsapp { width: 56px; padding: 0; justify-content: center; }
-  .whatsapp__texto { display: none; }
-}
+/* Círculo con el icono (el nombre lo lleva aria-label) */
+.whatsapp { width: 56px; padding: 0; justify-content: center; }
+.whatsapp__texto { display: none; }
 @media (min-width: 760px) {
   .whatsapp { right: 24px; bottom: 24px; }
+}
+
+/* Carril libre a la derecha para el botón de WhatsApp: lo que se puede pulsar no llega
+   a la esquina donde está el botón, así que no tiene que moverse ni esconderse.
+   Móvil: botón de 56 px a 16 px del borde + 12 px de aire = 68 px dentro del margen.
+   Escritorio: a 24 px del borde, con el margen lateral de la web basta con 36 px. */
+@media (max-width: 759px) {
+  .stock__botones, .nosotros__botones, .taller__cita, .campo--casilla,
+  .pie__arriba, .pie__abajo, .pie__columnas { padding-right: 68px; }
+  .showroom .showroom__miniaturas { margin-right: 68px; }
+  .showroom .showroom__flechas { justify-content: flex-start; gap: 8px; }
+  .sede__telefono { justify-self: start; }
+  /* Servicios: la flecha va bajo la frase, a la izquierda */
+  .servicio {
+    grid-template-columns: 1fr;
+    grid-template-areas: "nombre" "texto" "flecha";
+  }
+  .servicio__flecha { justify-self: start; width: 40px; height: 40px; margin-top: 14px; }
+}
+@media (min-width: 760px) {
+  .servicio, .sede, .pie__arriba, .pie__abajo, .pie__columnas { padding-right: 36px; }
+  .showroom .vehiculo__info { padding-right: calc(var(--gutter) + 36px); }
 }
 
 /* Texto solo para lectores de pantalla */
