@@ -188,10 +188,12 @@
     escenas.push({
       el: stock, clase: 'stock--animada',
       pintar: function (p) {
-        stock.style.setProperty('--abre', suave(acotar(p / 0.5)).toFixed(4));
-        stock.style.setProperty('--texto-visible', acotar((p - 0.45) / 0.2).toFixed(3));
+        // 0–45 %: la foto se abre; 47 %: entra el título; 55–75 %: aparece el resto del texto
+        stock.style.setProperty('--abre', suave(acotar(p / 0.45)).toFixed(4));
+        stock.classList.toggle('titulo-visible', p >= 0.47);
+        stock.style.setProperty('--texto-visible', acotar((p - 0.55) / 0.2).toFixed(3));
       },
-      quitar: function () { stock.style.removeProperty('--abre'); stock.style.removeProperty('--texto-visible'); }
+      quitar: function () { stock.style.removeProperty('--abre'); stock.style.removeProperty('--texto-visible'); stock.classList.remove('titulo-visible'); }
     });
   }
 
@@ -246,21 +248,20 @@
     taller.querySelector('.taller__piezas').insertAdjacentElement('afterend', progreso);
     var marcas = [].slice.call(progreso.children);
 
-    // Umbrales de aparición: repartidos en el primer 75 % del recorrido; la cita al 82 %
-    // El primero aparece nada más llegar; el resto, repartidos hasta el 62 %
-    var umbral = function (i) { return 0.02 + i * 0.6 / Math.max(1, piezas.length - 1); };
-    var UMBRAL_CITA = 0.8;
+    // Umbrales de aparición: el primer punto nada más llegar, el resto hasta el 60 %;
+    // la cita al 70 %, con el coche ya aparcado. Queda un tramo corto para leerlo antes de seguir.
+    var umbral = function (i) { return 0.02 + i * 0.58 / Math.max(1, piezas.length - 1); };
+    var UMBRAL_CITA = 0.7;
     var tallerEnPantalla = false;
     var pendienteTaller = false;
 
-    // Posición horizontal del coche (en vw) según el progreso:
-    // entra deprisa (0–12 %), cruza despacio por el centro mientras salen los recuadros
-    // (12–88 %) y sale por la izquierda al final (88–100 %).
-    var ENTRA = 0.12, SALE = 0.88;
+    // Posición horizontal del coche (en vw) según el progreso: entra por la derecha, frena y
+    // se queda aparcado en el centro (desde el 62 %), junto al botón de cita. Ya no se va.
+    var APARCA = 0.62;
     var posicionCoche = function (p) {
-      if (p < ENTRA) { var a = p / ENTRA; return 70 - 62 * (1 - Math.pow(1 - a, 3)); }   // 70 → 8, frenando
-      if (p > SALE) { var b = (p - SALE) / (1 - SALE); return -8 - 72 * Math.pow(b, 3); } // −8 → −80, acelerando
-      return 8 - 16 * (p - ENTRA) / (SALE - ENTRA);                                       // 8 → −8
+      if (p >= APARCA) return 0;
+      var a = p / APARCA;
+      return 70 * Math.pow(1 - a, 3);   // 70 → 0, frenando
     };
 
     var pintarTaller = function () {
@@ -430,6 +431,23 @@
         botonEnviar.textContent = 'Enviar';
       });
     });
+  }
+
+  /* ---------- Enlace con # al cargar (p. ej. .../#nosotros) ---------- */
+  // Las secciones animadas que van antes cambian de altura al arrancar, así que el salto
+  // automático del navegador (y más con desplazamiento suave) puede quedarse corto o pasarse.
+  // Cuando la página ya tiene su altura final, se salta a la sección sin animación.
+  if (location.hash.length > 1) {
+    var irAlAncla = function () {
+      var destino = document.getElementById(decodeURIComponent(location.hash.slice(1)));
+      if (!destino) return;
+      raiz.style.scrollBehavior = 'auto';
+      destino.scrollIntoView();
+      requestAnimationFrame(function () { raiz.style.scrollBehavior = ''; });
+    };
+    irAlAncla();
+    window.addEventListener('load', irAlAncla);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(irAlAncla);
   }
 
   /* ---------- Portada: vídeo de YouTube en bucle con la foto como respaldo ---------- */

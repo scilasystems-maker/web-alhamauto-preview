@@ -112,6 +112,7 @@ p { margin: 0; }
 
 /* ---------- Titulares: ancho expandido y peso fuerte ---------- */
 .titular {
+  text-wrap: balance;
   font-stretch: 125%;
   font-weight: 750;
   line-height: .95;
@@ -682,6 +683,14 @@ p { margin: 0; }
   height: 100svh;
 }
 .stock--animada .stock__abajo { visibility: visible; }
+/* El título no aparece mientras la foto es un recuadro: entra línea a línea cuando ya está
+   abierta a pantalla completa, sobre el velo oscuro (.titulo-visible, js/main.js) */
+.stock--animada .stock__titulo .linea > span {
+  transform: translateY(108%);
+  transition: transform .9s var(--salida);
+}
+.stock--animada .stock__titulo .linea:nth-child(2) > span { transition-delay: .1s; }
+.stock--animada.titulo-visible .stock__titulo .linea > span { transform: none; }
 
 /* =========================================================
    5. El taller, pieza a pieza
@@ -806,7 +815,7 @@ p { margin: 0; }
 }
 
 /* ---------- Versión animada ---------- */
-.taller--animado { height: 320vh; height: 320svh; }
+.taller--animado { height: 250vh; height: 250svh; }
 .taller--animado .taller__fijo {
   position: sticky;
   top: 0;
@@ -1021,6 +1030,11 @@ p { margin: 0; }
   font-size: clamp(120px, 30vw, 500px);
   line-height: .8;
   letter-spacing: -.05em;
+  color: var(--tinta);   /* respaldo si el navegador no recorta el fondo al texto */
+}
+/* El degradado va en el span que entra con la animación: si estuviera en el <p>, el span
+   (que se mueve en su propia capa) quedaría transparente y no se vería nada */
+.nosotros__anio .linea > span {
   color: transparent;
   background: linear-gradient(to bottom, #FFFFFF 10%, rgba(205, 220, 245, .55) 95%);
   -webkit-background-clip: text;
@@ -1360,6 +1374,15 @@ p { margin: 0; }
 }
 .pie__legal { display: flex; flex-wrap: wrap; gap: 8px 24px; margin: 0; padding: 0; list-style: none; }
 .pie__marca-registrada { flex-basis: 100%; }
+/* Crédito discreto: mismo tamaño y gris que la línea legal */
+.pie__credito { color: var(--niebla-2); }
+.pie__credito a {
+  color: var(--niebla);
+  text-decoration: underline;
+  text-decoration-color: rgba(167, 178, 198, .35);
+  text-underline-offset: 3px;
+}
+.pie__credito a:hover { color: var(--tinta); text-decoration-color: currentColor; }
 @media (min-width: 1000px) { .pie__marca-registrada { flex-basis: auto; margin-left: auto; } }
 
 /* La palabra enorme: ocupa exactamente el ancho de la pantalla */
