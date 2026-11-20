@@ -398,11 +398,12 @@ p { margin: 0; }
   position: absolute;
   top: 50%;
   left: 50%;
-  /* "cover" para un 16:9: lo que falte por ancho o por alto se sale por los bordes */
-  width: max(100vw, 177.78vh);
-  height: max(100vh, 56.25vw);
-  width: max(100cqw, 177.78cqh);
-  height: max(100cqh, 56.25cqw);
+  /* "cover" para un 16:9, y además al menos 80 px de sobra por arriba y por abajo:
+     ahí queda escondida la barra de título que YouTube pinta unos segundos al arrancar */
+  width: max(100vw, calc(177.78vh + 285px));
+  height: max(calc(100vh + 160px), 56.25vw);
+  width: max(100cqw, calc(177.78cqh + 285px));
+  height: max(calc(100cqh + 160px), 56.25cqw);
   border: 0;
   transform: translate(calc(-50% + var(--yt-x)), -50%) scale(1.04); /* margen extra para esconder bordes */
 }
