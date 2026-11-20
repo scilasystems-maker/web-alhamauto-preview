@@ -450,6 +450,46 @@
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(irAlAncla);
   }
 
+  /* ---------- Botón flotante de WhatsApp ---------- */
+  // Visible solo cuando la portada ya ha quedado atrás, y se aparta mientras haya algún
+  // botón importante en la franja de abajo de la pantalla (para no taparlo).
+  var whatsapp = document.getElementById('whatsapp');
+  if (whatsapp && 'IntersectionObserver' in window) {
+    var portadaVista = true;
+    var protegidosEnFranja = [];
+    var actualizarWhatsapp = function () {
+      whatsapp.classList.toggle('visible', !portadaVista && !protegidosEnFranja.length);
+    };
+    new IntersectionObserver(function (e) {
+      // "Bajar de la portada": cuando queda menos de un 15 % de ella a la vista
+      portadaVista = e[0].intersectionRatio > 0.15;
+      actualizarWhatsapp();
+    }, { threshold: [0, 0.15, 0.3] }).observe(document.getElementById('inicio'));
+
+    // Franja inferior de 120 px: lo que el botón podría tapar
+    var franja = function () { return '-' + Math.max(0, window.innerHeight - 120) + 'px 0px 0px 0px'; };
+    var crearVigia = function () {
+      var vigia = new IntersectionObserver(function (entradas) {
+        entradas.forEach(function (en) {
+          var i = protegidosEnFranja.indexOf(en.target);
+          if (en.isIntersecting && i < 0) protegidosEnFranja.push(en.target);
+          if (!en.isIntersecting && i >= 0) protegidosEnFranja.splice(i, 1);
+        });
+        actualizarWhatsapp();
+      }, { rootMargin: franja() });
+      document.querySelectorAll('.formulario__enviar, .formulario__estado, .campo--casilla, .showroom__flechas, .taller__cita, .nosotros__botones, .stock__botones, .pie__abajo, .servicio__flecha')
+        .forEach(function (el) { vigia.observe(el); });
+      return vigia;
+    };
+    var vigiaActual = crearVigia();
+    var altoAnterior = window.innerHeight;
+    window.addEventListener('resize', function () {
+      if (Math.abs(window.innerHeight - altoAnterior) < 80) return; // la barra del móvil al hacer scroll
+      altoAnterior = window.innerHeight;
+      vigiaActual.disconnect(); protegidosEnFranja = []; vigiaActual = crearVigia();
+    });
+  }
+
   /* ---------- Portada: vídeo de YouTube en bucle con la foto como respaldo ---------- */
   // Solo se ve el tramo [INICIO, FIN) del vídeo, en bucle, gobernado con la API de YouTube
   // (nunca vuelve al principio del vídeo).

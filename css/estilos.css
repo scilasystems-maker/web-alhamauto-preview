@@ -1404,6 +1404,56 @@ p { margin: 0; }
   fill: rgba(205, 220, 245, .14);
 }
 
+/* =========================================================
+   Botón flotante de WhatsApp
+   Cristal azul noche con el icono blanco; el verde de WhatsApp solo en un aro fino.
+   Oculto en la portada; .visible (js/main.js) lo trae con fundido.
+   ========================================================= */
+.whatsapp {
+  position: fixed;
+  z-index: 45;                         /* por debajo de la cabecera (50) y del menú (60–70) */
+  right: max(16px, env(safe-area-inset-right));
+  bottom: max(16px, env(safe-area-inset-bottom));
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  height: 56px;
+  min-width: 56px;
+  padding: 0 16px;
+  border: 1px solid rgba(37, 211, 102, .55);
+  border-radius: 28px;
+  background: rgba(10, 20, 36, .78);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  backdrop-filter: blur(14px) saturate(140%);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, .35);
+  color: var(--tinta);
+  font-size: 15px;
+  font-weight: 600;
+  text-decoration: none;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(12px);
+  transition: opacity .45s var(--curva), transform .6s var(--salida), visibility 0s linear .45s,
+              background-color .25s var(--curva), border-color .25s var(--curva);
+}
+.whatsapp svg { width: 24px; height: 24px; flex: none; }
+.whatsapp.visible {
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+  transition-delay: 0s;
+}
+.whatsapp:hover { background: rgba(18, 32, 58, .92); border-color: #25D366; }
+.whatsapp:focus-visible { outline: 2px solid var(--tinta); outline-offset: 4px; }
+/* En el móvil, solo el icono (círculo) */
+@media (max-width: 759px) {
+  .whatsapp { width: 56px; padding: 0; justify-content: center; }
+  .whatsapp__texto { display: none; }
+}
+@media (min-width: 760px) {
+  .whatsapp { right: 24px; bottom: 24px; }
+}
+
 /* Texto solo para lectores de pantalla */
 .sr-only {
   position: absolute;
