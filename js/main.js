@@ -335,6 +335,35 @@
 
         var X = function (v) { return (v - base.left).toFixed(1); };
         var Y = function (v) { return (v - base.top).toFixed(1); };
+
+        if (!movil) {
+          // Escritorio: un solo trazo recto desde debajo del texto del servicio hasta la pieza.
+          // Sale de un punto entre el centro de la columna y la vertical de la pieza (diagonal suave)
+          // y, si hace falta, se desplaza lo justo para no rozar el botón de cita.
+          var y0 = r.bottom + 12;
+          var x0 = Math.min(Math.max(qx, r.left + 16), r.right - 16);
+          x0 = x0 + ((r.left + r.right) / 2 - x0) * 0.35;
+          if (rc.width > 0 && rc.top > y0 && rc.top < qy) {   // también antes de que aparezca: así no salta
+            var tc = (rc.top - 10 - y0) / (qy - y0), tb = (rc.bottom + 10 - y0) / (qy - y0);
+            var xEn = function (x, tt) { return x + (qx - x) * tt; };
+            var pisa = function (x) {
+              var a1 = xEn(x, tc), a2 = xEn(x, Math.min(1, tb));
+              return Math.max(a1, a2) > rc.left - 12 && Math.min(a1, a2) < rc.right + 12;
+            };
+            if (pisa(x0)) {
+              // Mover el arranque a la derecha de la cita (la x en la franja de la cita es la que manda)
+              var objetivo = rc.right + 14;
+              var tt = Math.max(tc, 0.0001);
+              x0 = Math.min(r.right - 8, Math.max(x0, (objetivo - qx * tt) / (1 - tt)));
+            }
+          }
+          t.linea.setAttribute('d', 'M' + X(x0) + ' ' + Y(y0) + ' L' + X(qx) + ' ' + Y(qy));
+          t.punto.setAttribute('cx', X(qx)); t.punto.setAttribute('cy', Y(qy));
+          t.halo.setAttribute('cx', X(qx)); t.halo.setAttribute('cy', Y(qy));
+          return;
+        }
+
+        // Móvil: ruta en ángulo recto por el margen derecho (como estaba)
         t.linea.setAttribute('d', 'M' + X(ax) + ' ' + Y(ay) + ' H' + X(gx) + ' V' + Y(ky) + ' H' + X(qx) + ' V' + Y(qy));
         t.punto.setAttribute('cx', X(qx)); t.punto.setAttribute('cy', Y(qy));
         t.halo.setAttribute('cx', X(qx)); t.halo.setAttribute('cy', Y(qy));

@@ -898,6 +898,13 @@ p { margin: 0; }
 .taller__lineas .dibujada .taller__punto,
 .taller__lineas .dibujada .taller__halo { opacity: 1; }
 
+/* Escritorio: líneas más finas y tenues, para que el coche siga siendo el protagonista */
+@media (min-width: 760px) {
+  .taller__linea { stroke: rgba(205, 220, 245, .32); stroke-width: .75; }
+  .taller__punto { r: 3; }
+  .taller__halo { r: 7; stroke: rgba(242, 245, 250, .3); }
+}
+
 /* Indicador de progreso (solo móvil, lo crea js/main.js) */
 .taller__progreso { display: none; }
 
