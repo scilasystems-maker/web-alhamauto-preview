@@ -47,7 +47,7 @@
   <link rel="preload" as="image" href="media/portada-1280.webp?v=9f3efcb264" imagesrcset="media/portada-1280.webp?v=9f3efcb264 1280w, media/portada-1920.webp?v=23fec34bc6 1920w, media/portada.webp?v=98b0f05834 2400w" imagesizes="(max-aspect-ratio: 3/2) 150vh, 100vw" type="image/webp">
   <link rel="preconnect" href="https://www.youtube.com">
   <link rel="preconnect" href="https://www.youtube-nocookie.com">
-  <link rel="stylesheet" href="css/estilos.css?v=b29c4c0176">
+  <link rel="stylesheet" href="css/estilos.css?v=f05ac553a4">
 </head>
 <body>
   <a class="saltar" href="#contenido">Saltar al contenido</a>
@@ -356,45 +356,71 @@
       </div>
     </section>
     <section class="servicios" id="servicios" aria-labelledby="servicios-titulo">
-      <div class="servicios__cabeza">
-        <h2 class="servicios__titulo titular revelar-lineas" id="servicios-titulo"><span class="linea"><span>Servicios</span></span></h2>
-        <p class="servicios__entradilla">Todo lo que rodea a tu Volkswagen, en un mismo sitio.</p>
+      <div class="servicios__fijo">
+        <h2 class="servicios__titulo" id="servicios-titulo">Servicios</h2>
+        <ol class="servicios__pista" role="list">
+        <li class="panel" id="servicio-ocasion">
+          <picture class="panel__foto">
+            <source type="image/webp" srcset="media/servicios/ocasion-960.webp?v=35e1d63d8c 960w, media/servicios/ocasion-1600.webp?v=e8330347c3 1600w, media/servicios/ocasion-2400.webp?v=5acfb65f85 2400w" sizes="100vw">
+            <img src="media/servicios/ocasion.jpg?v=5472281d30" alt="" width="1600" height="900" loading="lazy" decoding="async">
+          </picture>
+          <div class="panel__contenido">
+            <p class="panel__num"><span class="sr-only">Servicio </span>1 <span aria-hidden="true">/</span><span class="sr-only">de</span> 4</p>
+            <h3 class="panel__titulo titular">Vehículos de ocasión</h3>
+            <p class="panel__texto">Volkswagen de ocasión revisados en 260 puntos.</p>
+            <a class="panel__cta" href="#nuevos-ocasion">Ver nuevos y de ocasión<svg class="icono icono--flecha" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+          </div>
+        </li>
+        <li class="panel" id="servicio-compramos">
+          <picture class="panel__foto">
+            <source type="image/webp" srcset="media/servicios/compramos-960.webp?v=492d4769a5 960w, media/servicios/compramos-1600.webp?v=5caf314955 1600w, media/servicios/compramos-2400.webp?v=1e88d96046 2400w" sizes="100vw">
+            <img src="media/servicios/compramos.jpg?v=c35e5a600f" alt="" width="1600" height="900" loading="lazy" decoding="async">
+          </picture>
+          <div class="panel__contenido">
+            <p class="panel__num"><span class="sr-only">Servicio </span>2 <span aria-hidden="true">/</span><span class="sr-only">de</span> 4</p>
+            <h3 class="panel__titulo titular">Compramos tu coche</h3>
+            <p class="panel__texto">Tráenoslo y te lo tasamos gratis.</p>
+            <a class="panel__cta" href="#contacto" data-motivo="tasacion">Tasa tu coche<svg class="icono icono--flecha" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+          </div>
+        </li>
+        <li class="panel" id="servicio-financiacion">
+          <picture class="panel__foto">
+            <source type="image/webp" srcset="media/servicios/financiacion-960.webp?v=bb84126134 960w, media/servicios/financiacion-1600.webp?v=483f4476ce 1600w, media/servicios/financiacion-2400.webp?v=624d1a1565 2400w" sizes="100vw">
+            <img src="media/servicios/financiacion.jpg?v=84d5d1df12" alt="" width="1600" height="900" loading="lazy" decoding="async">
+          </picture>
+          <div class="panel__contenido">
+            <p class="panel__num"><span class="sr-only">Servicio </span>3 <span aria-hidden="true">/</span><span class="sr-only">de</span> 4</p>
+            <h3 class="panel__titulo titular">Financiación y renting</h3>
+            <p class="panel__texto">Para particulares, y también para empresas y autónomos.</p>
+            <a class="panel__cta" href="#contacto" data-motivo="financiacion">Pide información<svg class="icono icono--flecha" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+          </div>
+        </li>
+        <li class="panel" id="servicio-taller">
+          <picture class="panel__foto">
+            <source type="image/webp" srcset="media/servicios/taller-960.webp?v=44b892ce9f 960w, media/servicios/taller-1600.webp?v=a36bd44694 1600w, media/servicios/taller-2400.webp?v=c8a7c22cd7 2400w" sizes="100vw">
+            <img src="media/servicios/taller.jpg?v=55e9ec87d8" alt="" width="1600" height="900" loading="lazy" decoding="async">
+          </picture>
+          <div class="panel__contenido">
+            <p class="panel__num"><span class="sr-only">Servicio </span>4 <span aria-hidden="true">/</span><span class="sr-only">de</span> 4</p>
+            <h3 class="panel__titulo titular">Taller y recambios</h3>
+            <p class="panel__texto">Recambios para tu Volkswagen.</p>
+            <a class="panel__cta" href="#taller">Ver el taller<svg class="icono icono--flecha" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+          </div>
+        </li>
+        </ol>
+        <div class="servicios__indicador" aria-hidden="true">
+          <span class="servicios__cuenta"><b data-servicio-actual>1</b> / 4</span>
+          <span class="servicios__barras"><i></i><i></i><i></i><i></i></span>
+        </div>
       </div>
-      <ul class="servicios__lista" role="list">
-        <li>
-          <a class="servicio" href="#nuevos-ocasion">
-            <h3 class="servicio__titulo">Vehículos de ocasión</h3>
-            <p class="servicio__texto">Volkswagen de ocasión revisados en 260 puntos.</p>
-            <span class="servicio__flecha" aria-hidden="true"><svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
-          </a>
-        </li>
-        <li>
-          <a class="servicio" href="#contacto" data-motivo="tasacion">
-            <h3 class="servicio__titulo">Compramos tu coche</h3>
-            <p class="servicio__texto">Tráenoslo y te lo tasamos gratis.</p>
-            <span class="servicio__flecha" aria-hidden="true"><svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
-          </a>
-        </li>
-        <li>
-          <a class="servicio" href="#contacto" data-motivo="financiacion">
-            <h3 class="servicio__titulo">Financiación y renting</h3>
-            <p class="servicio__texto">Para particulares, y también para empresas y autónomos.</p>
-            <span class="servicio__flecha" aria-hidden="true"><svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
-          </a>
-        </li>
-        <li>
-          <a class="servicio" href="#taller">
-            <h3 class="servicio__titulo">Taller y recambios</h3>
-            <p class="servicio__texto">Recambios para tu Volkswagen.</p>
-            <span class="servicio__flecha" aria-hidden="true"><svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
-          </a>
-        </li>
-      </ul>
     </section>
     <section class="nosotros" id="nosotros" aria-labelledby="nosotros-titulo">
+      <figure class="nosotros__foto" aria-hidden="true">
+        <img src="media/nosotros/locomotora-gssr-1897.webp?v=531fd77ad5" alt="" width="723" height="559" loading="lazy" decoding="async">
+      </figure>
       <div class="nosotros__dentro">
         <h2 class="nosotros__titulo" id="nosotros-titulo">Nosotros</h2>
-        <p class="nosotros__anio titular revelar-lineas" aria-hidden="true"><span class="linea"><span>1900</span></span></p>
+        <p class="nosotros__anio titular" data-anio="1900" data-desde="2026"><span class="sr-only">1900</span><span class="cuentakm" aria-hidden="true">1900</span></p>
         <p class="nosotros__origen">Grupo Huertas nació en 1900 como taller auxiliar del ferrocarril.</p>
 
         <div class="nosotros__rejilla">
@@ -562,6 +588,7 @@
         <p class="pie__marca-registrada">Volkswagen es una marca registrada de Volkswagen AG.</p>
         <p class="pie__credito">Web diseñada por <a href="https://scilaai.com" target="_blank" rel="noopener">ScilaAI<span class="sr-only"> (se abre en otra pestaña)</span></a></p>
         <p class="pie__credito"><a href="https://commons.wikimedia.org/wiki/File:Castillo_y_casco_urbano_de_Alhama_de_Murcia.jpg" target="_blank" rel="noopener">Foto de Alhama<span class="sr-only"> (ficha de la foto, se abre en otra pestaña)</span></a>: Lorenzo Soriano, <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.es" target="_blank" rel="noopener license">CC BY-SA 4.0<span class="sr-only"> (licencia, se abre en otra pestaña)</span></a>, vía Wikimedia Commons</p>
+        <p class="pie__credito"><a href="https://commons.wikimedia.org/wiki/File:Locomotora_de_la_GSSR_en_%C3%81guilas.jpg" target="_blank" rel="noopener">Foto histórica<span class="sr-only"> (ficha de la foto, se abre en otra pestaña)</span></a>: Gustave Gillman, Archivo General de la Región de Murcia</p>
       </div>
     </div>
     <svg class="pie__gigante" viewBox="0 0 1000 150" preserveAspectRatio="none" aria-hidden="true" focusable="false">
@@ -573,6 +600,6 @@
     <span class="whatsapp__texto" aria-hidden="true">WhatsApp</span>
   </a>
 
-  <script src="js/main.js?v=ab6327ce6e"></script>
+  <script src="js/main.js?v=5b9238306c"></script>
 </body>
 </html>

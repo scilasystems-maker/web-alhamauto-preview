@@ -986,9 +986,10 @@ p { margin: 0; }
 }
 
 /* =========================================================
-   6. Servicios: lista grande a todo el ancho
-   Cada fila: número, nombre expandido, frase y flecha. Con ratón, la frase y la flecha se ven
-   al pasar por encima o con el foco; en pantallas táctiles se ven siempre y un toque abre el enlace.
+   6. Servicios: cuatro paneles a pantalla completa
+   Base (móvil, sin JS o con movimiento reducido): paneles apilados en vertical.
+   .servicios--lateral (js/main.js, escritorio): la sección queda fija y los paneles pasan
+   de lado al bajar; --pos va de 0 a 3 (panel en pantalla) y mueve la pista.
    ========================================================= */
 /* Servicios y Contacto: azul noche un punto más claro; los bordes se funden con lo de
    alrededor en 160 px para que el cambio sea suave */
@@ -999,137 +1000,216 @@ p { margin: 0; }
     var(--noche-claro) calc(100% - 160px), var(--noche) 100%);
 }
 .servicios {
-  padding: clamp(96px, 14vh, 160px) var(--gutter);
+  --pos: 0;
+  position: relative;
   color: var(--tinta);
+  background: var(--noche);
   scroll-margin-top: 0;
 }
-.servicios__cabeza,
-.servicios__lista {
-  max-width: var(--ancho);
-  margin-inline: auto;
-}
-.servicios__titulo { font-size: clamp(44px, 7vw, 120px); }
-.servicios__entradilla {
-  margin-top: 16px;
+.servicios__fijo { position: relative; }
+.servicios__titulo {
+  position: absolute;
+  z-index: 3;
+  top: calc(var(--alto-cabecera) + clamp(16px, 3vh, 32px));
+  left: var(--gutter);
   color: var(--niebla);
-  font-size: clamp(17px, 1.35vw, 20px);
+  font-size: var(--t-sec);
+  font-weight: 600;
+  letter-spacing: .02em;
 }
-.servicios__lista {
-  margin-top: clamp(40px, 7vh, 80px);
-  padding: 0;
-  list-style: none;
-  border-top: 1px solid var(--linea-oscura);
-}
-.servicios__lista li { border-bottom: 1px solid var(--linea-oscura); }
+.servicios__pista { margin: 0; padding: 0; list-style: none; }
 
-.servicio {
+.panel {
   position: relative;
-  display: grid;
-  grid-template-columns: 1fr auto;
-  grid-template-areas:
-    "nombre flecha"
-    "texto  flecha";
-  align-items: center;
-  column-gap: clamp(16px, 3vw, 48px);
-  padding: clamp(22px, 3.4vh, 36px) 0;
-  color: var(--niebla);
-  text-decoration: none;
+  display: flex;
+  align-items: flex-end;
+  min-height: 100vh;
+  min-height: 100svh;
+  overflow: hidden;
   isolation: isolate;
-  transition: color .35s var(--curva);
 }
-/* Luz que entra desde la izquierda al iluminarse la fila */
-.servicio::before {
+.panel__foto {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  margin: 0;
+  background: var(--noche);
+}
+.panel__foto img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: brightness(.62) saturate(.85);
+  transform: translateX(calc(var(--desfase, 0) * -9%)) scale(1.12);
+}
+/* Velo: oscurece abajo a la izquierda, donde va el texto, y funde los bordes */
+.panel__foto::after {
   content: "";
   position: absolute;
-  z-index: -1;
-  inset: 0 calc(-1 * var(--gutter));
-  background: linear-gradient(90deg, rgba(150, 180, 230, .11), rgba(150, 180, 230, .03) 60%, rgba(150, 180, 230, 0));
-  opacity: 0;
-  transition: opacity .45s var(--curva);
+  inset: 0;
+  background:
+    radial-gradient(120% 100% at 0% 100%, rgba(5, 11, 23, .92) 0%, rgba(5, 11, 23, .72) 42%, rgba(5, 11, 23, .25) 72%, rgba(5, 11, 23, .05) 90%),
+    linear-gradient(to bottom, rgba(5, 11, 23, .65) 0%, rgba(5, 11, 23, 0) 22%, rgba(5, 11, 23, 0) 60%, rgba(5, 11, 23, .75) 100%);
 }
-.servicio__num {
-  grid-area: num;
-  align-self: start;
-  padding-top: .9em;
-  color: var(--niebla-2);
-  font-size: 13px;
+.panel__contenido {
+  width: 100%;
+  max-width: var(--ancho);
+  margin: 0 auto;
+  padding: 0 var(--gutter) clamp(56px, 11vh, 120px);
+}
+.panel__num {
+  display: inline-block;   /* pastilla oscura: se lee igual sobre la zona más clara de la foto */
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: rgba(5, 11, 23, .62);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  color: var(--tinta);
+  font-size: var(--t-sec);
   font-weight: 600;
-  letter-spacing: .1em;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: .08em;
+}
+.panel__titulo {
+  max-width: 11ch;
+  margin-top: 12px;
+  font-size: clamp(44px, min(8.4vw, 14vh), 168px);
+}
+.panel__texto {
+  max-width: 40ch;
+  margin-top: clamp(14px, 2.4vh, 24px);
+  color: var(--niebla);
+  font-size: clamp(18px, 1.5vw, 22px);
+  line-height: 1.5;
+}
+.panel__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 52px;
+  margin-top: clamp(16px, 3vh, 28px);
+  padding: 14px 26px;
+  border-radius: var(--radio);
+  background: var(--tinta);
+  color: var(--noche);
+  font-size: 16px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background-color .25s var(--curva);
+}
+.panel__cta:hover { background: #FFFFFF; }
+.panel__cta:hover .icono--flecha { transform: translateX(4px); }
+.panel__cta:focus-visible { outline: 2px solid var(--tinta); outline-offset: 4px; }
+
+.servicios__indicador { display: none; }
+
+/* ---------- Escritorio: paso lateral ---------- */
+.servicios--lateral { height: calc(100vh * 4); height: calc(100svh * 4); }
+.servicios--lateral .servicios__fijo {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  height: 100svh;
+  overflow: hidden;
+  overflow: clip;   /* que el foco no pueda desplazar la pista por su cuenta */
+}
+.servicios--lateral .servicios__pista {
+  display: flex;
+  height: 100%;
+  width: 400%;
+  transform: translate3d(calc(var(--pos) * -25%), 0, 0);
+  will-change: transform;
+}
+.servicios--lateral .panel { flex: 0 0 25%; min-height: 0; height: 100%; }
+.servicios--lateral .panel__contenido > * {
+  opacity: calc(1 - min(1, abs(var(--desfase, 0)) * 1.6));
+  transform: translateX(calc(var(--desfase, 0) * 6vw));
+}
+.servicios--lateral .servicios__indicador {
+  position: absolute;
+  z-index: 3;
+  right: calc(var(--gutter) + 88px);   /* a la izquierda del botón de WhatsApp */
+  bottom: clamp(56px, 11vh, 120px);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  color: var(--niebla);
+  font-size: var(--t-sec);
   font-variant-numeric: tabular-nums;
 }
-.servicio__titulo {
-  grid-area: nombre;
-  font-size: clamp(30px, 5.4vw, 88px);
-  font-stretch: 125%;
-  font-weight: 700;
-  line-height: 1;
-  letter-spacing: -.035em;
-  transition: transform .5s var(--salida);
+.servicios__cuenta b { color: var(--tinta); font-weight: 600; }
+.servicios__barras { display: flex; gap: 6px; }
+.servicios__barras i {
+  width: 28px;
+  height: 3px;
+  border-radius: 2px;
+  background: rgba(205, 220, 245, .25);
+  transition: background-color .3s var(--curva);
 }
-.servicio__texto {
-  grid-area: texto;
-  max-height: 0;
-  overflow: hidden;
-  opacity: 0;
-  color: var(--niebla);
-  font-size: var(--t-texto);
-  line-height: 1.5;
-  transition: max-height .5s var(--salida), opacity .35s var(--curva), margin-top .5s var(--salida);
-}
-.servicio__flecha {
-  grid-area: flecha;
-  display: grid;
-  place-items: center;
-  width: clamp(44px, 4.4vw, 64px);
-  height: clamp(44px, 4.4vw, 64px);
-  border: 1px solid rgba(255, 255, 255, .28);
-  border-radius: 50%;
-  color: var(--tinta);
-  opacity: 0;
-  transform: translateX(-16px);
-  transition: opacity .35s var(--curva), transform .5s var(--salida), background-color .3s var(--curva);
-}
-/* Fila iluminada */
-.servicio:hover,
-.servicio:focus-visible { color: var(--tinta); }
-.servicio:hover::before,
-.servicio:focus-visible::before { opacity: 1; }
-.servicio:hover .servicio__titulo,
-.servicio:focus-visible .servicio__titulo { transform: translateX(12px); }
-.servicio:hover .servicio__texto,
-.servicio:focus-visible .servicio__texto { max-height: 4em; opacity: 1; margin-top: 10px; }
-.servicio:hover .servicio__flecha,
-.servicio:focus-visible .servicio__flecha { opacity: 1; transform: none; }
-/* Pantallas táctiles: sin "pasar por encima", así que la frase y la flecha se ven siempre */
-@media (hover: none) {
-  .servicio { color: var(--tinta); }
-  .servicio__texto { max-height: none; opacity: 1; margin-top: 8px; }
-  .servicio__flecha { opacity: 1; transform: none; }
-  .servicio:active::before { opacity: 1; }   /* breve destello al tocar */
-}
-.servicio:hover .servicio__flecha { background: var(--tinta); color: var(--noche); }
-.servicio:focus-visible { outline-offset: 6px; }
-/* Mientras una fila está iluminada, las demás se apagan un poco */
-.servicios__lista:hover .servicio:not(:hover) { color: var(--niebla-2); }
-
-@media (max-width: 559px) {
-  .servicio { grid-template-columns: 1fr auto; grid-template-areas: "nombre flecha" "texto flecha"; }
-  .servicio__num { display: none; }
-}
+.servicios__barras i.hecho { background: var(--tinta); }
 
 /* =========================================================
-   7. Nosotros: el 1900 gigante y la ficha como lista limpia
+   7. Nosotros: el 1900 como un cuentakilómetros sobre una foto de 1897
    ========================================================= */
 .nosotros {
+  --zoom: 1;
   position: relative;
   padding: clamp(96px, 14vh, 160px) var(--gutter);
-  background:
-    radial-gradient(60% 45% at 30% 20%, rgba(0, 30, 80, .4), rgba(0, 30, 80, 0) 70%),
-    var(--noche);
+  background: var(--noche);
   color: var(--tinta);
   overflow: hidden;
+  isolation: isolate;
   scroll-margin-top: 0;
 }
+/* Foto histórica: blanco y negro, oscurecida, grano fino y viñeteado (que parezca de archivo) */
+.nosotros__foto {
+  position: absolute;
+  z-index: -1;
+  inset: 0 0 auto 0;
+  height: min(100%, 115vh);
+  margin: 0;
+  overflow: hidden;
+}
+.nosotros__foto img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 45%;
+  filter: grayscale(1) contrast(1.15) brightness(.46) blur(.3px);
+  transform: scale(1.14);
+  transform-origin: 55% 50%;
+  transition: transform 16s cubic-bezier(.2, .5, .3, 1);
+}
+.nosotros.en-pantalla .nosotros__foto img { transform: scale(1.02); }
+.nosotros__foto::before {          /* grano de película */
+  content: "";
+  position: absolute;
+  inset: -50%;
+  z-index: 1;
+  opacity: .22;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .5 0 0 0 0 .5 0 0 0 0 .5 0 0 0 1.4 -.2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+  animation: grano 1.1s steps(6) infinite;
+  pointer-events: none;
+}
+.nosotros__foto::after {           /* viñeteado y fundido con el azul noche */
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background:
+    radial-gradient(85% 75% at 50% 42%, rgba(5, 11, 23, 0) 30%, rgba(5, 11, 23, .7) 82%, rgba(5, 11, 23, .92) 100%),
+    linear-gradient(to bottom, rgba(5, 11, 23, .5) 0%, rgba(5, 11, 23, 0) 20%, rgba(5, 11, 23, 0) 55%, var(--noche) 100%);
+}
+@media (max-width: 759px) {
+  /* En el móvil la frase cae sobre la locomotora: un punto más oscura */
+  .nosotros__foto img { filter: grayscale(1) contrast(1.15) brightness(.36) blur(.3px); }
+}
+@keyframes grano {
+  0% { transform: translate(0, 0); } 20% { transform: translate(-6%, 4%); } 40% { transform: translate(5%, -7%); }
+  60% { transform: translate(-3%, 8%); } 80% { transform: translate(7%, 2%); } 100% { transform: translate(0, 0); }
+}
+
 .nosotros__dentro { max-width: var(--ancho); margin: 0 auto; }
 /* El h2 "Nosotros" queda solo para lectores de pantalla: el 1900 hace de titular */
 .nosotros__titulo {
@@ -1141,22 +1221,34 @@ p { margin: 0; }
   white-space: nowrap;
 }
 .nosotros__anio {
-  margin: clamp(8px, 2vh, 24px) 0 0 -.04em;
+  margin: clamp(48px, 14vh, 160px) 0 0 -.04em;
   font-size: clamp(120px, 30vw, 500px);
   line-height: .8;
   letter-spacing: -.05em;
-  color: var(--tinta);   /* respaldo si el navegador no recorta el fondo al texto */
+  color: var(--tinta);
+  font-variant-numeric: tabular-nums;
 }
-/* El degradado va en el span que entra con la animación: si estuviera en el <p>, el span
-   (que se mueve en su propia capa) quedaría transparente y no se vería nada */
-.nosotros__anio .linea > span {
-  color: transparent;
-  background: linear-gradient(to bottom, #FFFFFF 10%, rgba(205, 220, 245, .55) 95%);
-  -webkit-background-clip: text;
-  background-clip: text;
+/* Cuentakilómetros: cada cifra es una columna 0–9 que rueda dentro de una ventana */
+.cuentakm {
+  display: inline-flex;
+  -webkit-mask-image: linear-gradient(to bottom, #000 25%, rgba(0, 0, 0, .55) 100%);
+  mask-image: linear-gradient(to bottom, #000 25%, rgba(0, 0, 0, .55) 100%);
 }
-.nosotros__anio .linea { padding-bottom: .02em; }
+.cuentakm__ventana {
+  display: inline-block;
+  height: .8em;
+  overflow: hidden;
+}
+.cuentakm__rueda {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  will-change: transform;
+}
+.cuentakm__rueda span { display: block; height: .8em; line-height: .8em; }
+
 .nosotros__origen {
+  text-shadow: 0 2px 18px rgba(5, 11, 23, .9);
   max-width: 30ch;
   margin-top: clamp(16px, 3vh, 32px);
   font-size: clamp(20px, 2vw, 30px);
@@ -1164,6 +1256,16 @@ p { margin: 0; }
   font-weight: 600;
   line-height: 1.25;
 }
+/* Con animación: el texto aparece cuando el contador llega a 1900 */
+.js .nosotros--contador .nosotros__origen,
+.js .nosotros--contador .nosotros__rejilla {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity .8s var(--curva), transform 1s var(--salida);
+}
+.js .nosotros--contador.contado .nosotros__origen,
+.js .nosotros--contador.contado .nosotros__rejilla { opacity: 1; transform: none; }
+.js .nosotros--contador.contado .nosotros__rejilla { transition-delay: .2s; }
 
 .nosotros__rejilla {
   display: grid;
@@ -1191,31 +1293,6 @@ p { margin: 0; }
   gap: 12px;
   margin-top: 32px;
 }
-@media (max-width: 559px) {
-  .nosotros__botones .boton { flex: 1 1 100%; }
-}
-
-/* Ficha: lista limpia, sin caja */
-.ficha__titulo {
-  margin-bottom: 8px;
-  color: var(--niebla);
-  font-size: 13px;
-  font-weight: 600;
-  letter-spacing: .14em;
-  text-transform: uppercase;
-}
-.ficha__datos { margin: 0; }
-.ficha__datos > div {
-  display: grid;
-  grid-template-columns: minmax(120px, 34%) 1fr;
-  gap: 16px;
-  padding: 16px 0;
-  border-bottom: 1px solid var(--linea-oscura);
-}
-.ficha__datos dt { color: var(--niebla); font-size: 15px; }
-.ficha__datos dd { margin: 0; color: var(--tinta); font-size: 17px; line-height: 1.45; }
-.ficha__datos a { text-decoration-color: rgba(255, 255, 255, .35); text-underline-offset: 4px; }
-.ficha__datos a:hover { text-decoration-color: currentColor; }
 
 /* =========================================================
    8. Contacto: formulario oscuro con campos subrayados y red como lista
@@ -1588,15 +1665,11 @@ p { margin: 0; }
   .showroom .showroom__miniaturas { margin-right: 68px; }
   .showroom .showroom__flechas { justify-content: flex-start; gap: 8px; }
   .sede__telefono { justify-self: start; }
-  /* Servicios: la flecha va bajo la frase, a la izquierda */
-  .servicio {
-    grid-template-columns: 1fr;
-    grid-template-areas: "nombre" "texto" "flecha";
-  }
-  .servicio__flecha { justify-self: start; width: 40px; height: 40px; margin-top: 14px; }
+  .panel__contenido { padding-right: calc(var(--gutter) + 68px); }
+  .panel__cta { width: 100%; justify-content: center; }   /* mismo ancho que los demás botones */
 }
 @media (min-width: 760px) {
-  .servicio, .sede, .pie__arriba, .pie__abajo, .pie__columnas { padding-right: 36px; }
+  .sede, .pie__arriba, .pie__abajo, .pie__columnas { padding-right: 36px; }
   .showroom .vehiculo__info { padding-right: calc(var(--gutter) + 36px); }
 }
 
@@ -1969,6 +2042,8 @@ html:not(.js) .showroom__mandos { display: none; }
   .linea > span, .js .revelar-lineas .linea > span { transform: none !important; animation: none !important; }
   .menu__lista li { opacity: 1; transform: none; }
   .palabra { transition: none; }
+  .nosotros__foto::before { animation: none; }
+  .nosotros__foto img { transition: none; transform: scale(1.02); }
   .taller__linea, .taller__punto, .taller__halo { transition: none !important; }
   .stock__foto img { transform: none; }
   .js .vehiculo .vehiculo__fondo { translate: 0 0 !important; }

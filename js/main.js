@@ -585,6 +585,147 @@
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(irAlAncla);
   }
 
+  /* ---------- Servicios: paneles que pasan de lado al bajar (escritorio) ---------- */
+  // La sección mide 4 pantallas y su contenido queda fijo; --pos (0 → 3) mueve la pista.
+  // Cada panel se detiene un momento en el centro antes de dar paso al siguiente.
+  // En el móvil (< 760 px), sin JS o con movimiento reducido, los paneles van apilados.
+  var servicios = document.getElementById('servicios');
+  if (servicios && 'IntersectionObserver' in window) {
+    var paneles = [].slice.call(servicios.querySelectorAll('.panel'));
+    var nPaneles = paneles.length;
+    var actualServicio = servicios.querySelector('[data-servicio-actual]');
+    var barras = [].slice.call(servicios.querySelectorAll('.servicios__barras i'));
+    var escritorio = window.matchMedia('(min-width: 760px)');
+    var serviciosVisible = false, pendienteServicios = false;
+
+    // Escalón suave: se queda quieto en cada panel y pasa rápido entre uno y otro
+    var escalonar = function (x) {
+      var base = Math.floor(x), f = x - base;
+      var t = Math.min(1, Math.max(0, (f - 0.2) / 0.6));
+      return base + t * t * (3 - 2 * t);
+    };
+
+    var pintarServicios = function () {
+      pendienteServicios = false;
+      if (!servicios.classList.contains('servicios--lateral')) return;
+      var r = servicios.getBoundingClientRect();
+      var recorrido = r.height - window.innerHeight;
+      var p = recorrido > 0 ? Math.min(1, Math.max(0, -r.top / recorrido)) : 0;
+      var pos = Math.min(nPaneles - 1, escalonar(p * (nPaneles - 1) * 1.0001));
+      servicios.style.setProperty('--pos', pos.toFixed(4));
+      paneles.forEach(function (pn, i) { pn.style.setProperty('--desfase', (i - pos).toFixed(3)); });
+      var activo = Math.round(pos);
+      if (actualServicio) actualServicio.textContent = activo + 1;
+      barras.forEach(function (b, i) { b.classList.toggle('hecho', i <= activo); });
+    };
+
+    var activarServicios = function () {
+      var lateral = escritorio.matches && !reducirMovimiento.matches;
+      servicios.classList.toggle('servicios--lateral', lateral);
+      if (!lateral) {
+        servicios.style.removeProperty('--pos');
+        paneles.forEach(function (pn) { pn.style.removeProperty('--desfase'); });
+      }
+      pintarServicios();
+    };
+
+    new IntersectionObserver(function (e) { serviciosVisible = e[0].isIntersecting; if (serviciosVisible) pintarServicios(); })
+      .observe(servicios);
+    // Teclado: al llegar con Tab al enlace de un panel, la página baja hasta ese panel
+    paneles.forEach(function (pn, i) {
+      pn.addEventListener('focusin', function () {
+        if (!servicios.classList.contains('servicios--lateral')) return;
+        var r = servicios.getBoundingClientRect();
+        var recorrido = r.height - window.innerHeight;
+        var destino = window.scrollY + r.top + recorrido * (i / (nPaneles - 1));
+        raiz.style.scrollBehavior = 'auto';
+        window.scrollTo(0, destino);
+        raiz.style.scrollBehavior = '';
+      });
+    });
+    window.addEventListener('scroll', function () {
+      if (serviciosVisible && !pendienteServicios) { pendienteServicios = true; requestAnimationFrame(pintarServicios); }
+    }, { passive: true });
+    window.addEventListener('resize', activarServicios);
+    if (escritorio.addEventListener) escritorio.addEventListener('change', activarServicios);
+    if (reducirMovimiento.addEventListener) reducirMovimiento.addEventListener('change', activarServicios);
+    activarServicios();
+  }
+
+  /* ---------- Nosotros: el 1900 como un cuentakilómetros ---------- */
+  // Cada cifra es una rueda 0–9 que gira como en un cuentakilómetros: la de las unidades rueda
+  // seguido y las demás solo cuando la de su derecha pasa de 0 a 9. Al entrar la sección en
+  // pantalla cuenta de 2026 hacia atrás hasta 1900; después aparece el texto.
+  // Con movimiento reducido (o sin IntersectionObserver), 1900 quieto y todo visible.
+  var nosotros = document.getElementById('nosotros');
+  var anio = nosotros && nosotros.querySelector('.nosotros__anio');
+  if (nosotros && anio) {
+    var DESTINO = parseInt(anio.dataset.anio, 10) || 1900;
+    var DESDE = parseInt(anio.dataset.desde, 10) || 2026;
+    var caja = anio.querySelector('.cuentakm');
+    var cifras = String(DESTINO).length;
+    caja.textContent = '';
+    var ruedas = [];
+    for (var c = 0; c < cifras; c++) {
+      var ventana = document.createElement('span');
+      ventana.className = 'cuentakm__ventana';
+      var rueda = document.createElement('span');
+      rueda.className = 'cuentakm__rueda';
+      for (var d = 0; d <= 10; d++) {   // 0…9 y otra vez 0, para el paso de 9 a 0
+        var cifra = document.createElement('span');
+        cifra.textContent = d % 10;
+        rueda.appendChild(cifra);
+      }
+      ventana.appendChild(rueda);
+      caja.appendChild(ventana);
+      ruedas.push(rueda);
+    }
+
+    // Posición continua de cada rueda para un valor v (puede tener decimales mientras gira)
+    var mostrarValor = function (v) {
+      for (var k = 0; k < cifras; k++) {
+        var lugar = Math.pow(10, cifras - 1 - k);
+        var pos;
+        if (lugar === 1) pos = v % 10;
+        else {
+          var digito = Math.floor(v / lugar) % 10;
+          var resto = v % lugar;                   // lo que llevan las ruedas de la derecha
+          var giro = Math.max(0, (resto - (lugar - 1)));   // solo gira en el último paso (…9 → …0)
+          pos = digito + giro;
+        }
+        ruedas[k].style.transform = 'translateY(' + (-pos * 0.8).toFixed(4) + 'em)';
+      }
+    };
+
+    var animarContador = function () {
+      var inicio = null, DURACION = 2600;
+      var paso = function (t) {
+        if (inicio === null) inicio = t;
+        var x = Math.min(1, (t - inicio) / DURACION);
+        var e = 1 - Math.pow(1 - x, 3);          // frena al llegar
+        mostrarValor(DESDE - (DESDE - DESTINO) * e);
+        if (x < 1) requestAnimationFrame(paso);
+        else { mostrarValor(DESTINO); nosotros.classList.add('contado'); }
+      };
+      requestAnimationFrame(paso);
+    };
+
+    if (reducirMovimiento.matches || !('IntersectionObserver' in window)) {
+      mostrarValor(DESTINO);
+      nosotros.classList.add('contado', 'en-pantalla');
+    } else {
+      nosotros.classList.add('nosotros--contador');
+      mostrarValor(DESDE);
+      var observadorAnio = new IntersectionObserver(function (e) {
+        if (!e[0].isIntersecting) return;
+        observadorAnio.disconnect();
+        nosotros.classList.add('en-pantalla');
+        animarContador();
+      }, { threshold: 0.45 });
+      observadorAnio.observe(anio);
+    }
+  }
+
   /* ---------- Botón flotante de WhatsApp ---------- */
   // Oculto solo en la portada; después, siempre visible.
   // Si al hacer scroll un botón importante pasa por debajo, el de WhatsApp sube con un
@@ -595,7 +736,7 @@
     var SEPARACION = 12;   // px entre el botón de WhatsApp y el botón que esquiva
     // Respaldo: el CSS ya deja un carril libre a la derecha; esto solo actúa si algo lo invade
     var PROTEGIDOS = 'a.boton, button.boton, .campo--casilla input, .campo--casilla label a, ' +
-      '.showroom__flechas .flecha, .miniatura, .vehiculo.activo .vehiculo__pregunta, .servicio__flecha, ' +
+      '.showroom__flechas .flecha, .miniatura, .vehiculo.activo .vehiculo__pregunta, .panel__cta, ' +
       '.sede__telefono, .ficha__datos a, .enlace-flecha, .pie a';
     var elevacion = 0;
     var pendienteWa = false;
