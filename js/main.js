@@ -248,6 +248,99 @@
     taller.querySelector('.taller__piezas').insertAdjacentElement('afterend', progreso);
     var marcas = [].slice.call(progreso.children);
 
+    /* Líneas de cada servicio a su pieza del coche.
+       Ruta en ángulo recto, para no pasar por encima de ningún texto ni del botón de cita:
+       1) desde el final del título del servicio, en horizontal hasta el hueco entre columnas
+          (en el móvil, el margen derecho de la pantalla);
+       2) por ese hueco hacia abajo hasta una franja libre entre el texto (y la cita, si la
+          línea tiene que pasar por debajo de ella) y el techo del coche;
+       3) en horizontal hasta encima de la pieza y abajo hasta el punto.
+       Los puntos van en data-punto (% del ancho y alto de la foto), así caen en su sitio a
+       cualquier tamaño y siguen al coche mientras se mueve. */
+    var svgNS = 'http://www.w3.org/2000/svg';
+    var lienzo = taller.querySelector('.taller__lineas');
+    var fijo = taller.querySelector('.taller__fijo');
+    var fotoCoche = coche.querySelector('img');
+    var botonCita = cita.querySelector('.boton') || cita;
+    var esMovil = window.matchMedia('(max-width: 759px)');
+    var trazos = piezas.map(function (pz) {
+      var g = document.createElementNS(svgNS, 'g');
+      var linea = document.createElementNS(svgNS, 'path');
+      linea.setAttribute('class', 'taller__linea');
+      linea.setAttribute('pathLength', '1');
+      var halo = document.createElementNS(svgNS, 'circle');
+      halo.setAttribute('class', 'taller__halo'); halo.setAttribute('r', '9');
+      var punto = document.createElementNS(svgNS, 'circle');
+      punto.setAttribute('class', 'taller__punto'); punto.setAttribute('r', '4');
+      g.appendChild(linea); g.appendChild(halo); g.appendChild(punto);
+      if (lienzo) lienzo.appendChild(g);
+      var xy = (pz.dataset.punto || '50,50').split(',').map(parseFloat);
+      return { g: g, linea: linea, halo: halo, punto: punto, px: xy[0] / 100, py: xy[1] / 100, pz: pz };
+    });
+
+    var dibujarLineas = function () {
+      if (!lienzo) return;
+      var base = fijo.getBoundingClientRect();
+      var foto = fotoCoche.getBoundingClientRect();
+      var rc = botonCita.getBoundingClientRect();
+      var animado = taller.classList.contains('taller--animado');
+      var citaVisible = rc.width > 0 && (!animado || cita.classList.contains('visible'));
+      var movil = esMovil.matches;
+      lienzo.setAttribute('viewBox', '0 0 ' + base.width + ' ' + base.height);
+
+      // Qué líneas se ven: con animación, las de los servicios ya aparecidos (en el móvil, solo
+      // la del servicio que se está mostrando); sin animación, todas
+      var activas = trazos.filter(function (t) {
+        if (!animado) return true;
+        return movil ? t.pz.classList.contains('actual') : t.pz.classList.contains('visible');
+      });
+      trazos.forEach(function (t) { t.g.classList.toggle('dibujada', activas.indexOf(t) >= 0); });
+
+      // Franja libre para los tramos horizontales: bajo los servicios visibles y sobre el techo
+      var fondoTexto = 0;
+      trazos.forEach(function (t) {
+        if (animado && movil && t.pz.classList.contains('visible') && !t.pz.classList.contains('actual')) return;
+        fondoTexto = Math.max(fondoTexto, t.pz.getBoundingClientRect().bottom);
+      });
+      var techo = foto.top + foto.height * 0.04;
+      var huecoDerecho = Math.min(window.innerWidth - 6, base.right - 6);
+
+      trazos.forEach(function (t, i) {
+        var r = t.pz.getBoundingClientRect();
+        // Final del título (última línea si ocupa dos)
+        var rango = document.createRange();
+        rango.selectNodeContents(t.pz.querySelector('.pieza__titulo'));
+        var lineas = rango.getClientRects();
+        var ultima = lineas[lineas.length - 1] || r;
+        var ax = ultima.right + 10, ay = ultima.top + ultima.height / 2;
+
+        // Hueco vertical: entre esta columna y la siguiente; en el móvil (una columna), el margen
+        var siguiente = trazos[i + 1] && trazos[i + 1].pz.getBoundingClientRect();
+        var gx;
+        if (!movil && siguiente && siguiente.left > r.right + 8) gx = (r.right + siguiente.left) / 2;
+        else gx = Math.min(huecoDerecho - (animado ? 0 : i * 4), r.right + (window.innerWidth - r.right) / 2);
+        if (!movil && !siguiente) gx = Math.min(huecoDerecho, r.right + (base.right - r.right) / 2);
+
+        // Punto sobre la pieza, en la foto del coche
+        var qx = foto.left + foto.width * t.px, qy = foto.top + foto.height * t.py;
+
+        // Si el tramo horizontal pasa por la x del botón de cita, debe ir por debajo de él
+        var minX = Math.min(gx, qx), maxX = Math.max(gx, qx);
+        var cruzaCita = citaVisible && maxX > rc.left - 8 && minX < rc.right + 8 && rc.bottom < foto.bottom;
+        var arriba = Math.max(fondoTexto, cruzaCita ? rc.bottom : 0) + 10;
+        var abajo = Math.max(arriba + 6, techo - 8);
+        var n = trazos.length;
+        var ky = arriba + (abajo - arriba) * (i + 0.5) / n;
+        if (qy < ky) ky = qy;   // por si la pieza quedara por encima de la franja
+
+        var X = function (v) { return (v - base.left).toFixed(1); };
+        var Y = function (v) { return (v - base.top).toFixed(1); };
+        t.linea.setAttribute('d', 'M' + X(ax) + ' ' + Y(ay) + ' H' + X(gx) + ' V' + Y(ky) + ' H' + X(qx) + ' V' + Y(qy));
+        t.punto.setAttribute('cx', X(qx)); t.punto.setAttribute('cy', Y(qy));
+        t.halo.setAttribute('cx', X(qx)); t.halo.setAttribute('cy', Y(qy));
+      });
+    };
+
     // Umbrales de aparición: el primer punto nada más llegar, el resto hasta el 60 %;
     // la cita al 70 %, con el coche ya aparcado. Queda un tramo corto para leerlo antes de seguir.
     var umbral = function (i) { return 0.02 + i * 0.58 / Math.max(1, piezas.length - 1); };
@@ -283,12 +376,14 @@
       });
       piezas.forEach(function (pz, i) { pz.classList.toggle('actual', i === actual); });
       cita.classList.toggle('visible', p >= UMBRAL_CITA);
+      dibujarLineas();
     };
 
     var activarTaller = function () {
       if (reducirMovimiento.matches) {
         taller.classList.remove('taller--animado');
         coche.style.transform = '';
+        dibujarLineas();   // líneas ya dibujadas, coche quieto
         return;
       }
       taller.classList.add('taller--animado');
@@ -306,7 +401,15 @@
         requestAnimationFrame(pintarTaller);
       }
     }, { passive: true });
-    window.addEventListener('resize', function () { if (taller.classList.contains('taller--animado')) pintarTaller(); });
+    window.addEventListener('resize', function () { if (taller.classList.contains('taller--animado')) pintarTaller(); else dibujarLineas(); });
+    window.addEventListener('load', function () { if (taller.classList.contains('taller--animado')) pintarTaller(); else dibujarLineas(); });
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { if (!taller.classList.contains('taller--animado')) dibujarLineas(); });
+    // El botón de cita aparece con transición: al terminar, las líneas se recolocan por debajo
+    cita.addEventListener('transitionend', function () { if (taller.classList.contains('taller--animado')) pintarTaller(); });
+    // Igual con cada servicio: entra desplazado y, al terminar de colocarse, la línea se ajusta a él
+    piezas.forEach(function (pz) {
+      pz.addEventListener('transitionend', function (e) { if (e.propertyName === 'transform') dibujarLineas(); });
+    });
     if (reducirMovimiento.addEventListener) reducirMovimiento.addEventListener('change', activarTaller);
     activarTaller();
   }

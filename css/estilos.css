@@ -860,6 +860,44 @@ p { margin: 0; }
   .taller__carretera::after { bottom: 36px; }
 }
 
+/* Líneas de servicio a pieza: se dibujan (stroke-dashoffset de 1 a 0) al aparecer cada servicio */
+.taller__fijo { position: relative; }
+.taller__lineas {
+  position: absolute;
+  inset: 0;
+  z-index: 2;            /* sobre el coche, para que el punto se vea en la pieza */
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+.taller__linea {
+  fill: none;
+  stroke: rgba(205, 220, 245, .55);
+  stroke-width: 1.25;
+  stroke-linejoin: round;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  transition: stroke-dashoffset 1s var(--salida);
+}
+.taller__punto {
+  fill: var(--tinta);
+  stroke: rgba(5, 11, 23, .9);
+  stroke-width: 2;
+  opacity: 0;
+  transition: opacity .35s var(--curva) .7s;
+}
+.taller__halo {
+  fill: none;
+  stroke: rgba(242, 245, 250, .45);
+  stroke-width: 1;
+  opacity: 0;
+  transition: opacity .35s var(--curva) .7s;
+}
+.taller__lineas .dibujada .taller__linea { stroke-dashoffset: 0; }
+.taller__lineas .dibujada .taller__punto,
+.taller__lineas .dibujada .taller__halo { opacity: 1; }
+
 /* Indicador de progreso (solo móvil, lo crea js/main.js) */
 .taller__progreso { display: none; }
 
@@ -1867,6 +1905,7 @@ html:not(.js) .showroom__mandos { display: none; }
   .linea > span, .js .revelar-lineas .linea > span { transform: none !important; animation: none !important; }
   .menu__lista li { opacity: 1; transform: none; }
   .palabra { transition: none; }
+  .taller__linea, .taller__punto, .taller__halo { transition: none !important; }
   .stock__foto img { transform: none; }
   .js .vehiculo .vehiculo__fondo { translate: 0 0 !important; }
   .js .vehiculo .vehiculo__coche, .js .vehiculo .vehiculo__info { transform: none !important; translate: 0 0 !important; }
