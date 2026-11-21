@@ -177,8 +177,11 @@
         // Se encienden durante el 15–80 % del recorrido; queda un respiro con la frase completa
         var n = palabras.length;
         palabras.forEach(function (w, i) { w.classList.toggle('encendida', p >= 0.15 + (i + 0.5) * 0.65 / n); });
+        // La foto de Alhama se aclara a la par: casi a oscuras al empezar y bien visible con la frase entera
+        // (al mismo ritmo que las palabras: 15–80 % del recorrido)
+        frase.style.setProperty('--luz', acotar((p - 0.12) / 0.7).toFixed(3));
       },
-      quitar: function () { palabras.forEach(function (w) { w.classList.remove('encendida'); }); }
+      quitar: function () { palabras.forEach(function (w) { w.classList.remove('encendida'); }); frase.style.removeProperty('--luz'); }
     });
   }
 
